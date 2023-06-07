@@ -4,7 +4,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <bean id="questionDao" class="ru.otus.dao.QuestionDaoImpl">
+    <bean id="questionDao" class="ru.otus.dao.QuestionDaoCsv">
         <constructor-arg index="0" value="questions.csv"/>
     </bean>
     <bean id="questionService" class="ru.otus.service.QuestionService">

@@ -4,26 +4,44 @@ import java.util.List;
 import java.util.Objects;
 
 public class Question {
+
     private int id;
 
     private String questionText;
 
-    private List<String> answersText;
-
-    private String rightAnswer;
+    private List<Answer> answers;
 
     public Question(){
     }
 
-    public Question(int id, String questionText, List<String> answersText, String rightAnswer) {
+    public Question(int id, String questionText, List<Answer> answersText) {
         this.id = id;
         this.questionText = questionText;
-        this.answersText = answersText;
-        this.rightAnswer = rightAnswer;
+        this.answers = answersText;
     }
 
-    public String getRightAnswer() {
-        return rightAnswer;
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getQuestionText() {
+        return questionText;
+    }
+
+    public void setQuestionText(String questionText) {
+        this.questionText = questionText;
+    }
+
+    public List<Answer> getAnswers() {
+        return answers;
+    }
+
+    public void setAnswers(List<Answer> answers) {
+        this.answers = answers;
     }
 
     @Override
@@ -35,22 +53,20 @@ public class Question {
             return false;
         }
         Question question = (Question) o;
-        return Objects.equals(questionText, question.questionText) && Objects.equals(answersText, question.answersText)
-                && Objects.equals(rightAnswer, question.rightAnswer);
+        return questionText.equals(question.questionText) && answers.equals(question.answers);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(questionText, answersText, rightAnswer);
+        return Objects.hash(questionText, answers);
     }
 
     @Override
     public String toString() {
-        return "Question: " + questionText + '\n' +
-                "Answers: \n1. " + answersText.get(0) + '\n' +
-                "2. " + answersText.get(1) + '\n' +
-                "3. " + answersText.get(2) + '\n' +
-                "4. " + answersText.get(3) + '\n' +
-                "5. " + answersText.get(4);
+        return "Question{" +
+                "id=" + id +
+                ", questionText='" + questionText + '\'' +
+                ", answers=" + answers +
+                '}';
     }
 }

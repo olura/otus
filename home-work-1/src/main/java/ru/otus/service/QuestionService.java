@@ -3,8 +3,6 @@ package ru.otus.service;
 import ru.otus.dao.QuestionDao;
 import ru.otus.model.Question;
 
-import java.util.Scanner;
-
 public class QuestionService {
 
     private final QuestionDao questionDao;
@@ -15,45 +13,14 @@ public class QuestionService {
 
     public void runTest() {
         for (Question question : questionDao.getAllQuestions()) {
-            printQuestion(question);
+            System.out.println("Question №" + question.getId() + ": " + question.getQuestionText() + "?");
+            System.out.println("Answers: ");
+            for (int i = 0; i < question.getAnswers().size(); i++) {
+                System.out.println(i + 1 + ") " + question.getAnswers().get(i).getAnswerText() + " -> "
+                        + question.getAnswers().get(i).isRightAnswer());
+            }
+            System.out.println();
         }
     }
-
-    private void printQuestion(Question question) {
-        Scanner scanner = new Scanner(System.in);
-        String answer;
-        System.out.println(question);
-        answer = scanner.nextLine();
-        if (question.getRightAnswer().equals(answer)) {
-            System.out.println(setColor("OK", Colors.GREEN));
-        } else {
-            System.out.println(setColor("ERROR", Colors.RED));
-        }
-    }
-
-    private String setColor(String text, Colors color) {
-        final String ansiRed = "\u001B[31m";
-        final String ansiGreen = "\u001B[32m";
-        final String ansiReset = "\u001B[0m";
-
-        StringBuilder stringBuilder = new StringBuilder();
-
-        switch (color) {
-            case RED -> stringBuilder.append(ansiRed);
-            case GREEN -> stringBuilder.append(ansiGreen);
-        }
-        stringBuilder.append(">>> ");
-        stringBuilder.append(text);
-        stringBuilder.append(ansiReset);
-        stringBuilder.append("\n");
-
-        return stringBuilder.toString();
-    }
-
-    private enum Colors {
-        RED,
-        GREEN
-    }
-
 }
 
