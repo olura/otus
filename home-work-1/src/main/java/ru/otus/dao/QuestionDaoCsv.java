@@ -3,11 +3,13 @@ package ru.otus.dao;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 import org.springframework.core.io.ClassPathResource;
+import ru.otus.exception.DataInputException;
 import ru.otus.model.Answer;
 import ru.otus.model.Question;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,10 +24,11 @@ public class QuestionDaoCsv implements QuestionDao{
     }
 
     @Override
-    public List<Question> getAllQuestions() {
+    public List<Question> getAllQuestions() throws DataInputException {
         List<Question> questionList = new ArrayList<>();
         ClassPathResource resource = new ClassPathResource(fileName);
 
+        new PrintStream(System.out);
         try (Reader reader = new InputStreamReader(resource.getInputStream());
              CSVReader csvReader = new CSVReader(reader)) {
             String[] nextRecord;
@@ -36,13 +39,15 @@ public class QuestionDaoCsv implements QuestionDao{
                 }
                 questionList.add(questionOptional.get());
             }
-        } catch (CsvValidationException | IOException e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            throw new DataInputException("File " + fileName + " not found");
+        } catch (CsvValidationException e) {
+            throw new DataInputException(e.getMessage());
         }
         return questionList;
     }
 
-    private Optional<Question> parseLineToQuestion(String[] nextRecord) throws CsvValidationException {
+    private Optional<Question> parseLineToQuestion(String[] nextRecord) throws CsvValidationException, DataInputException {
         Question question;
         List<Answer> answers = new ArrayList<>();
 
@@ -50,7 +55,7 @@ public class QuestionDaoCsv implements QuestionDao{
             return Optional.empty();
         }
         if (nextRecord.length != 8) {
-            throw new CsvValidationException("The string must contain 8 elements");
+            throw new DataInputException("The string must contain 8 elements");
         }
         for (int i = 2; i < 7; i++) {
             answers.add(new Answer(nextRecord[i]));

@@ -7,8 +7,15 @@
     <bean id="questionDao" class="ru.otus.dao.QuestionDaoCsv">
         <constructor-arg index="0" value="questions.csv"/>
     </bean>
+
+    <bean id="IOService" class="ru.otus.service.IOService">
+        <constructor-arg index="0" value="#{T(java.lang.System).out}"/>
+        <constructor-arg index="1" value="#{T(java.lang.System).in}"/>
+    </bean>
+
     <bean id="questionService" class="ru.otus.service.QuestionService">
         <constructor-arg index="0" ref="questionDao"/>
+        <constructor-arg index="1" ref="IOService"/>
     </bean>
 
 </beans>
