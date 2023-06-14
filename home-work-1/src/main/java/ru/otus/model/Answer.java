@@ -8,6 +8,9 @@ public class Answer {
 
     private boolean isRightAnswer;
 
+    public Answer() {
+    }
+
     public Answer(String answerText) {
         this.answerText = answerText;
         this.isRightAnswer = false;

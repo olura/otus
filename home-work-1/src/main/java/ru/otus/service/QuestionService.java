@@ -4,27 +4,26 @@ import ru.otus.dao.QuestionDao;
 import ru.otus.exception.DataInputException;
 import ru.otus.model.Question;
 
+import java.util.List;
+
 public class QuestionService {
 
     private final QuestionDao questionDao;
 
     private final IOService output;
 
-    public QuestionService(QuestionDao questionDao, IOService output) {
+    private final Converter converter;
+
+    public QuestionService(QuestionDao questionDao, IOService output, Converter converter) {
         this.questionDao = questionDao;
         this.output = output;
+        this.converter = converter;
     }
 
     public void runTest() {
         try {
-            for (Question question : questionDao.getAllQuestions()) {
-                output.printQuestion(question);
-                output.println("Answers: ");
-                for (int i = 0; i < question.getAnswers().size(); i++) {
-                    output.printAnswer(i + 1, question.getAnswers().get(i));
-                }
-                output.println();
-            }
+            List<Question> questions = questionDao.getAllQuestions();
+            questions.stream().map(converter::convertQuestionToString).forEach(output::println);
         } catch (DataInputException e) {
             System.err.println(e.getMessage());
         }

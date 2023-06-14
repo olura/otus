@@ -8,14 +8,17 @@
         <constructor-arg index="0" value="questions.csv"/>
     </bean>
 
-    <bean id="IOService" class="ru.otus.service.IOService">
+    <bean id="IOService" class="ru.otus.service.IOServiceImpl">
         <constructor-arg index="0" value="#{T(java.lang.System).out}"/>
         <constructor-arg index="1" value="#{T(java.lang.System).in}"/>
     </bean>
 
+    <bean id="converter" class="ru.otus.service.ConverterImpl"/>
+
     <bean id="questionService" class="ru.otus.service.QuestionService">
         <constructor-arg index="0" ref="questionDao"/>
         <constructor-arg index="1" ref="IOService"/>
+        <constructor-arg index="2" ref="converter"/>
     </bean>
 
 </beans>

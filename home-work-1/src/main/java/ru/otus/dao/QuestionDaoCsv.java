@@ -9,7 +9,6 @@ import ru.otus.model.Question;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintStream;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,16 +27,12 @@ public class QuestionDaoCsv implements QuestionDao{
         List<Question> questionList = new ArrayList<>();
         ClassPathResource resource = new ClassPathResource(fileName);
 
-        new PrintStream(System.out);
         try (Reader reader = new InputStreamReader(resource.getInputStream());
              CSVReader csvReader = new CSVReader(reader)) {
             String[] nextRecord;
             while ((nextRecord = csvReader.readNext()) != null) {
                 Optional<Question> questionOptional = parseLineToQuestion(nextRecord);
-                if (questionOptional.isEmpty()) {
-                    continue;
-                }
-                questionList.add(questionOptional.get());
+                questionOptional.ifPresent(questionList::add);
             }
         } catch (IOException e) {
             throw new DataInputException("File " + fileName + " not found");
@@ -47,21 +42,38 @@ public class QuestionDaoCsv implements QuestionDao{
         return questionList;
     }
 
-    private Optional<Question> parseLineToQuestion(String[] nextRecord) throws CsvValidationException, DataInputException {
-        Question question;
+    private Optional<Question> parseLineToQuestion(String[] nextRecord) throws DataInputException {
+        boolean isRightLine = validateString(nextRecord);
+
+        if (isRightLine) {
+            return convertLineToQuestion(nextRecord);
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    private Optional<Question> convertLineToQuestion(String[] nextRecord) {
+        List<Answer> answers = getAnswers(nextRecord);
+        return Optional.of(new Question(Integer.parseInt(nextRecord[0]), nextRecord[1], answers));
+    }
+
+    private List<Answer> getAnswers(String[] nextRecord) {
         List<Answer> answers = new ArrayList<>();
 
+        for (int i = 2; i < 7; i++) {
+            answers.add(new Answer(nextRecord[i]));
+        }
+        answers.get(Integer.parseInt(nextRecord[7]) - 1).setRightAnswer(true);
+        return answers;
+    }
+
+    private boolean validateString(String[] nextRecord) throws DataInputException {
         if (Character.isAlphabetic(nextRecord[0].charAt(0))) {
-            return Optional.empty();
+            return false;
         }
         if (nextRecord.length != 8) {
             throw new DataInputException("The string must contain 8 elements");
         }
-        for (int i = 2; i < 7; i++) {
-            answers.add(new Answer(nextRecord[i]));
-        }
-        answers.get(Integer.parseInt(nextRecord[7])).setRightAnswer(true);
-        question = new Question(Integer.parseInt(nextRecord[0]), nextRecord[1], answers);
-        return Optional.of(question);
+        return true;
     }
 }
