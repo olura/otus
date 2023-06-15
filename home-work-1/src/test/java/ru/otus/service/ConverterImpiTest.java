@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("Класс конвертер ")
 public class ConverterImpiTest {
 
-    Converter converter = new ConverterImpl();
+    private final Converter converter = new ConverterImpl();
 
     @DisplayName("корректно конвертирует вопрос в строку")
     @Test

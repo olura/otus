@@ -1,7 +1,7 @@
 package ru.otus.service;
 
 import ru.otus.dao.QuestionDao;
-import ru.otus.exception.DataInputException;
+import ru.otus.exception.DataLoadingException;
 import ru.otus.model.Question;
 
 import java.util.List;
@@ -24,8 +24,8 @@ public class QuestionService {
         try {
             List<Question> questions = questionDao.getAllQuestions();
             questions.stream().map(converter::convertQuestionToString).forEach(output::println);
-        } catch (DataInputException e) {
-            System.err.println(e.getMessage());
+        } catch (DataLoadingException e) {
+            output.println(e.getMessage());
         }
     }
 }

@@ -3,7 +3,7 @@ package ru.otus.dao;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 import org.springframework.core.io.ClassPathResource;
-import ru.otus.exception.DataInputException;
+import ru.otus.exception.DataLoadingException;
 import ru.otus.model.Answer;
 import ru.otus.model.Question;
 
@@ -23,29 +23,45 @@ public class QuestionDaoCsv implements QuestionDao{
     }
 
     @Override
-    public List<Question> getAllQuestions() throws DataInputException {
+    public List<Question> getAllQuestions() throws DataLoadingException {
         List<Question> questionList = new ArrayList<>();
         ClassPathResource resource = new ClassPathResource(fileName);
 
         try (Reader reader = new InputStreamReader(resource.getInputStream());
              CSVReader csvReader = new CSVReader(reader)) {
-            String[] nextRecord;
-            while ((nextRecord = csvReader.readNext()) != null) {
-                Optional<Question> questionOptional = parseLineToQuestion(nextRecord);
-                questionOptional.ifPresent(questionList::add);
+
+            String[] nextRecord = getFirstQuestionLine(csvReader);
+            while (nextRecord != null) {
+                Question question = parseLineToQuestion(nextRecord).orElseThrow(
+                        () -> new DataLoadingException("The string must contain 8 elements"));
+                questionList.add(question);
+                nextRecord = csvReader.readNext();
             }
-        } catch (IOException e) {
-            throw new DataInputException("File " + fileName + " not found");
-        } catch (CsvValidationException e) {
-            throw new DataInputException(e.getMessage());
+        } catch (IOException | CsvValidationException e) {
+            throw new DataLoadingException(e.getMessage());
         }
         return questionList;
     }
 
-    private Optional<Question> parseLineToQuestion(String[] nextRecord) throws DataInputException {
-        boolean isRightLine = validateString(nextRecord);
+    private String[] getFirstQuestionLine(CSVReader csvReader)
+            throws DataLoadingException, CsvValidationException {
+        try {
+            String[] nextRecord = csvReader.readNext();
+            if (nextRecord == null) {
+                throw new DataLoadingException("File " + fileName + " is empty");
+            }
+            if (Character.isAlphabetic(nextRecord[0].charAt(0))) {
+                return csvReader.readNext();
+            }
+            return nextRecord;
+        } catch (IOException e) {
+            throw new DataLoadingException("File " + fileName + " not found");
+        }
+    }
 
-        if (isRightLine) {
+    private Optional<Question> parseLineToQuestion(String[] nextRecord) {
+
+        if (nextRecord.length == 8) {
             return convertLineToQuestion(nextRecord);
         } else {
             return Optional.empty();
@@ -65,15 +81,5 @@ public class QuestionDaoCsv implements QuestionDao{
         }
         answers.get(Integer.parseInt(nextRecord[7]) - 1).setRightAnswer(true);
         return answers;
-    }
-
-    private boolean validateString(String[] nextRecord) throws DataInputException {
-        if (Character.isAlphabetic(nextRecord[0].charAt(0))) {
-            return false;
-        }
-        if (nextRecord.length != 8) {
-            throw new DataInputException("The string must contain 8 elements");
-        }
-        return true;
     }
 }
