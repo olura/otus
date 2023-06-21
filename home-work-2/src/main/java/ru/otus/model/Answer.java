@@ -28,8 +28,8 @@ public class Answer {
         return isRightAnswer;
     }
 
-    public void setRightAnswer(boolean rightAnswer) {
-        isRightAnswer = rightAnswer;
+    public void setItIsRightAnswer() {
+        isRightAnswer = true;
     }
 
     @Override

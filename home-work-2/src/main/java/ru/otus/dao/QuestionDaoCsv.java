@@ -86,7 +86,7 @@ public class QuestionDaoCsv implements QuestionDao{
         if (numberRightAnswer > 5 || numberRightAnswer < 1) {
             throw new DataLoadingException("The sequence number of correct answer is incorrect");
         }
-        answers.get(numberRightAnswer).setRightAnswer(true);
+        answers.get(numberRightAnswer).setItIsRightAnswer();
         return answers;
     }
 }

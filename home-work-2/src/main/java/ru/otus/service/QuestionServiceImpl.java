@@ -28,7 +28,7 @@ public class QuestionServiceImpl implements QuestionService {
         try {
             questions = questionDao.getAllQuestions();
         } catch (DataLoadingException e) {
-            ioService.println(e.getMessage());
+            ioService.println("Data loading error " + e.getMessage());
         }
         return questions;
     }

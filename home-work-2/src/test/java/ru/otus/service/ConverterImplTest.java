@@ -10,7 +10,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DisplayName("Класс конвертер ")
+@DisplayName("Класс ConverterImpl ")
 public class ConverterImplTest {
 
     private final Converter converter = new ConverterImpl();
