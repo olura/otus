@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @DisplayName("Класс QuestionDaoCsv ")
 public class QuestionDaoCsvTest {
 
-    QuestionDao questionDao = new QuestionDaoCsv("questions.csv");
+    private final QuestionDao questionDao = new QuestionDaoCsv("questions.csv");
 
     @Test
     @DisplayName("загружает все вопросы имеющиеся в файле")

@@ -11,9 +11,9 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Класс ConverterImpl ")
-public class ConverterImplTest {
+public class ConverterQuestionToStringTest {
 
-    private final Converter converter = new ConverterImpl();
+    private final Converter converter = new ConverterQuestionToString();
 
     @DisplayName("корректно конвертирует вопрос в строку")
     @Test

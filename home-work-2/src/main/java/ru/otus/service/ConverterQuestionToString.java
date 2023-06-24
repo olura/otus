@@ -8,12 +8,13 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Service
-public class ConverterImpl implements Converter {
+public class ConverterQuestionToString implements Converter {
 
     private String convertAnswerToString(int sequenceNumberOfAnswer, Answer answer) {
         return sequenceNumberOfAnswer + ") " + answer.getAnswerText();
     }
 
+    @Override
     public String convertQuestionToString(Question question) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("Question №");

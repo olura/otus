@@ -41,7 +41,7 @@ public class QuestionDaoCsv implements QuestionDao{
                 nextRecord = csvReader.readNext();
             }
         } catch (IOException | CsvValidationException e) {
-            throw new DataLoadingException(e.getMessage());
+            throw new DataLoadingException("Error during questions loading", e);
         }
         return questionList;
     }

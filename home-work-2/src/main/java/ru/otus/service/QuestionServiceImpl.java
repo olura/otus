@@ -8,6 +8,8 @@ import ru.otus.model.Question;
 
 import java.util.List;
 
+import static java.lang.System.exit;
+
 @Service
 public class QuestionServiceImpl implements QuestionService {
 
@@ -28,7 +30,12 @@ public class QuestionServiceImpl implements QuestionService {
         try {
             questions = questionDao.getAllQuestions();
         } catch (DataLoadingException e) {
-            ioService.println("Data loading error " + e.getMessage());
+            ioService.println("Data loading error: " + e.getMessage());
+            if (e.getCause() != null) {
+                ioService.println(e.getCause().getMessage());
+            }
+            ioService.println("Test stopped");
+            exit(1);
         }
         return questions;
     }

@@ -9,7 +9,7 @@ import ru.otus.service.IOServiceImpl;
 
 @Configuration
 @ComponentScan("ru.otus")
-@PropertySource("application.property")
+@PropertySource("application.properties")
 public class ApplicationConfiguration {
     @Bean
     IOService ioService() {
