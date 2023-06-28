@@ -2,9 +2,10 @@ package ru.otus.dao;
 
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
+import ru.otus.configuration.AppProps;
 import ru.otus.exception.DataLoadingException;
 import ru.otus.model.Answer;
 import ru.otus.model.Question;
@@ -21,8 +22,9 @@ public class QuestionDaoCsv implements QuestionDao{
 
     private final String fileName;
 
-    public QuestionDaoCsv(@Value("${file}")String fileName) {
-        this.fileName = fileName;
+    @Autowired
+    public QuestionDaoCsv(AppProps appProps) {
+        this.fileName = appProps.file();
     }
 
     @Override
@@ -58,7 +60,7 @@ public class QuestionDaoCsv implements QuestionDao{
             }
             return nextRecord;
         } catch (IOException e) {
-            throw new DataLoadingException("File " + fileName + " not found");
+            throw new DataLoadingException("File " + fileName + " not found", e);
         }
     }
 
