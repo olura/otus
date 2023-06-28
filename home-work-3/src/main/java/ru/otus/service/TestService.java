@@ -5,11 +5,15 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import ru.otus.configuration.AppProps;
+import ru.otus.exception.DataLoadingException;
 import ru.otus.model.Question;
 import ru.otus.model.Student;
 import ru.otus.model.Test;
 
 import java.util.List;
+import java.util.Optional;
+
+import static java.lang.System.exit;
 
 @Service
 public class TestService implements CommandLineRunner {
@@ -35,35 +39,62 @@ public class TestService implements CommandLineRunner {
     }
 
     private Student getStudent() {
-        String messageLocalization = messageSource.getMessage("get.username", new String[]{}, appProps.locale());
-        String name = ioService.readLineWithPrompt(messageLocalization);
-        messageLocalization = messageSource.getMessage("get.second_name", new String[]{}, appProps.locale());
-        String secondName =  ioService.readLineWithPrompt(messageLocalization);
+        String messageforUser;
+        
+        messageforUser = messageSource.getMessage("get.username", new String[]{}, appProps.locale());
+        String name = ioService.readLineWithPrompt(messageforUser);
+        
+        messageforUser = messageSource.getMessage("get.secondName", new String[]{}, appProps.locale());
+        String secondName =  ioService.readLineWithPrompt(messageforUser);
+        
         return new Student(name, secondName);
     }
 
     private Test runTest(Student student) {
         int result = 0;
-        String prompt = messageSource.getMessage("enter.answer", new String[]{}, appProps.locale());
-        List<Question> questions = questionService.getQuestions();
+        List<Question> questions = getQuestionsFromOptional();
 
+        String prompt = messageSource.getMessage("output.getAnswer", new String[]{}, appProps.locale());
         for (Question question : questions) {
             ioService.printlnWithPrompt(converter.convertQuestionToString(question), prompt);
             int studentAnswer = ioService.readInt();
-            if(studentAnswer == question.getNumberRightAnswer()) {
+            if (studentAnswer == question.getNumberRightAnswer()) {
                 result++;
             }
         }
         return new Test(student, questions, result);
     }
 
+    private List<Question> getQuestionsFromOptional() {
+        Optional<List<Question>> questions = Optional.empty();
+        String messageforUser;
+
+        try {
+            questions = questionService.getQuestions();
+        } catch (DataLoadingException e) {
+            messageforUser = messageSource.getMessage("output.error", new String[]{}, appProps.locale());
+            ioService.println(messageforUser + e.getMessage());
+            if (e.getCause() != null) {
+                ioService.println(e.getCause().getMessage());
+            }
+        }
+        if (questions.isPresent()) {
+            return questions.get();
+        } else {
+            messageforUser = messageSource.getMessage("output.testStopped", new String[]{}, appProps.locale());
+            ioService.println(messageforUser);
+            exit(1);
+            return null;
+        }
+    }
+
     @Override
     public void run(String... args) {
         Student student = getStudent();
         Test test = runTest(student);
-        var succecful = messageSource.getMessage("output.succecful", new String[]{}, appProps.locale());
-        var failed = messageSource.getMessage("output.failed", new String[]{}, appProps.locale());
-        var result = messageSource.getMessage("output.result",
+        String succecful = messageSource.getMessage("output.successful", new String[]{}, appProps.locale());
+        String failed = messageSource.getMessage("output.failed", new String[]{}, appProps.locale());
+        String result = messageSource.getMessage("output.result",
                 new String[]{student.name(), student.secondName(), Integer.toString(test.result())},
                 appProps.locale());
 

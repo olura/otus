@@ -3,6 +3,7 @@ package ru.otus.dao;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 import ru.otus.configuration.AppProps;
@@ -20,16 +21,20 @@ import java.util.Optional;
 @Component
 public class QuestionDaoCsv implements QuestionDao{
 
-    private final String fileName;
+    private final AppProps appProps;
+    
+    private final MessageSource messageSource;
 
     @Autowired
-    public QuestionDaoCsv(AppProps appProps) {
-        this.fileName = appProps.file();
+    public QuestionDaoCsv(AppProps appProps, MessageSource messageSource) {
+        this.appProps = appProps;
+        this.messageSource = messageSource;
     }
 
     @Override
-    public List<Question> getAllQuestions() throws DataLoadingException {
+    public Optional <List<Question>> getAllQuestions() throws DataLoadingException {
         List<Question> questionList = new ArrayList<>();
+        String fileName = messageSource.getMessage("get.fileName", new String[]{}, appProps.locale());
         ClassPathResource resource = new ClassPathResource(fileName);
 
         try (Reader reader = new InputStreamReader(resource.getInputStream());
@@ -45,7 +50,7 @@ public class QuestionDaoCsv implements QuestionDao{
         } catch (IOException | CsvValidationException e) {
             throw new DataLoadingException("Error during questions loading", e);
         }
-        return questionList;
+        return Optional.of(questionList);
     }
 
     private String[] getFirstQuestionLine(CSVReader csvReader)
@@ -53,14 +58,14 @@ public class QuestionDaoCsv implements QuestionDao{
         try {
             String[] nextRecord = csvReader.readNext();
             if (nextRecord == null) {
-                throw new DataLoadingException("File " + fileName + " is empty");
+                throw new DataLoadingException("File is empty");
             }
             if (Character.isAlphabetic(nextRecord[0].charAt(0))) {
                 return csvReader.readNext();
             }
             return nextRecord;
         } catch (IOException e) {
-            throw new DataLoadingException("File " + fileName + " not found", e);
+            throw new DataLoadingException("File not found", e);
         }
     }
 

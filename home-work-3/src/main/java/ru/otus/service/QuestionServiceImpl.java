@@ -7,37 +7,21 @@ import ru.otus.exception.DataLoadingException;
 import ru.otus.model.Question;
 
 import java.util.List;
-
-import static java.lang.System.exit;
+import java.util.Optional;
 
 @Service
 public class QuestionServiceImpl implements QuestionService {
 
     private final QuestionDao questionDao;
 
-    private final IOService ioService;
-
     @Autowired
-    public QuestionServiceImpl(QuestionDao questionDao, IOService ioService) {
+    public QuestionServiceImpl(QuestionDao questionDao) {
         this.questionDao = questionDao;
-        this.ioService = ioService;
     }
 
     @Override
-    public List<Question> getQuestions() {
-        List<Question> questions = null;
-
-        try {
-            questions = questionDao.getAllQuestions();
-        } catch (DataLoadingException e) {
-            ioService.println("Data loading error: " + e.getMessage());
-            if (e.getCause() != null) {
-                ioService.println(e.getCause().getMessage());
-            }
-            ioService.println("Test stopped");
-            exit(1);
-        }
-        return questions;
+    public Optional<List<Question>> getQuestions() throws DataLoadingException {
+         return questionDao.getAllQuestions();
     }
 }
 

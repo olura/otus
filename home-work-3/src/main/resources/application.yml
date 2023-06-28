@@ -4,6 +4,5 @@ spring:
     encoding: "UTF-8"
 
 app:
-  file: questions.csv
   rightAnswers: 4
-  locale: ru_RU
+  locale: en_EN
