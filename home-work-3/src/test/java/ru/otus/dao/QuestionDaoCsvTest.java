@@ -7,8 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.context.MessageSource;
-import ru.otus.configuration.AppProps;
+import ru.otus.configuration.FileSourceProvider;
 import ru.otus.exception.DataLoadingException;
 import ru.otus.model.Question;
 
@@ -18,7 +17,6 @@ import java.util.Properties;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 @DisplayName("Класс QuestionDaoCsv ")
@@ -27,22 +25,20 @@ public class QuestionDaoCsvTest {
     @InjectMocks
     private QuestionDaoCsv questionDao;
     @Mock
-    private AppProps appProps;
-    @Mock
-    private MessageSource messageSource;
+    FileSourceProvider fileSourceProvider;
 
     @BeforeEach
     void loadProperties() throws IOException {
         Properties prop = new Properties();
         prop.load(getClass().getClassLoader().getResourceAsStream("test.properties"));
-        String file = prop.getProperty("file");
-        given(messageSource.getMessage(any(), any(), any())).willReturn(file);
+        String file = prop.getProperty("fileName");
+        given(fileSourceProvider.getFileName()).willReturn(file);
     }
 
     @Test
     @DisplayName("загружает все вопросы имеющиеся в файле")
     void shouldLoadQuestions() throws DataLoadingException {
-        List<Question> questions = questionDao.getAllQuestions().get();
+        List<Question> questions = questionDao.getAllQuestions();
 
         assertEquals(2, questions.size());
     }
@@ -50,7 +46,7 @@ public class QuestionDaoCsvTest {
     @Test
     @DisplayName("корректно загружает текст вопроса")
     void shouldLoadQuestionText() throws DataLoadingException {
-        List<Question> questions = questionDao.getAllQuestions().get();
+        List<Question> questions = questionDao.getAllQuestions();
 
         assertThat(questions.toString()).contains("what is the name of the teacher");
         assertThat(questions.toString()).contains("what is the name of the subject");
@@ -59,7 +55,7 @@ public class QuestionDaoCsvTest {
     @Test
     @DisplayName("загружает все ответы для каждого из вопросов")
     void shouldLoadAnswers() throws DataLoadingException {
-        List<Question> questions = questionDao.getAllQuestions().get();
+        List<Question> questions = questionDao.getAllQuestions();
         for (Question question : questions) {
             assertEquals(5, question.answers().size());
         }
@@ -68,7 +64,7 @@ public class QuestionDaoCsvTest {
     @Test
     @DisplayName("корректно загружает текст ответов")
     void shouldLoadAnswerText() throws DataLoadingException {
-        List<Question> questions = questionDao.getAllQuestions().get();
+        List<Question> questions = questionDao.getAllQuestions();
 
         assertThat(questions.toString()).contains("Tom");
         assertThat(questions.toString()).contains("Bob");
@@ -80,7 +76,7 @@ public class QuestionDaoCsvTest {
     @Test
     @DisplayName("корректно загружает правильный ответ")
     void shouldLoadRightAnswer() throws DataLoadingException {
-        List<Question> questions = questionDao.getAllQuestions().get();
+        List<Question> questions = questionDao.getAllQuestions();
 
         assertEquals(questions.get(0).getNumberRightAnswer(), 3);
         assertEquals(questions.get(1).getNumberRightAnswer(), 2);

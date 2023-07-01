@@ -7,7 +7,6 @@ import ru.otus.exception.DataLoadingException;
 import ru.otus.model.Question;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class QuestionServiceImpl implements QuestionService {
@@ -20,7 +19,7 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public Optional<List<Question>> getQuestions() throws DataLoadingException {
+    public List<Question> getQuestions() throws DataLoadingException {
          return questionDao.getAllQuestions();
     }
 }

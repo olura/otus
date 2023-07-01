@@ -1,7 +1,6 @@
 package ru.otus.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import ru.otus.configuration.AppProps;
@@ -10,13 +9,11 @@ import ru.otus.model.Question;
 import ru.otus.model.Student;
 import ru.otus.model.Test;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-
-import static java.lang.System.exit;
 
 @Service
-public class TestService implements CommandLineRunner {
+public class TestService {
 
     private final IOService ioService;
 
@@ -52,7 +49,7 @@ public class TestService implements CommandLineRunner {
 
     private Test runTest(Student student) {
         int result = 0;
-        List<Question> questions = getQuestionsFromOptional();
+        List<Question> questions = getQuestions();
 
         String prompt = messageSource.getMessage("output.getAnswer", new String[]{}, appProps.locale());
         for (Question question : questions) {
@@ -65,44 +62,36 @@ public class TestService implements CommandLineRunner {
         return new Test(student, questions, result);
     }
 
-    private List<Question> getQuestionsFromOptional() {
-        Optional<List<Question>> questions = Optional.empty();
-        String messageforUser;
+    private List<Question> getQuestions() {
+        List<Question> questions = new ArrayList<>();
 
         try {
             questions = questionService.getQuestions();
         } catch (DataLoadingException e) {
-            messageforUser = messageSource.getMessage("output.error", new String[]{}, appProps.locale());
-            ioService.println(messageforUser + e.getMessage());
-            if (e.getCause() != null) {
-                ioService.println(e.getCause().getMessage());
-            }
+            String error = messageSource.getMessage("output.error", new String[]{}, appProps.locale());
+            ioService.println(error + e.getMessage());
+            String testStopped = messageSource.getMessage("output.testStopped", new String[]{}, appProps.locale());
+            ioService.println(testStopped);
         }
-        if (questions.isPresent()) {
-            return questions.get();
-        } else {
-            messageforUser = messageSource.getMessage("output.testStopped", new String[]{}, appProps.locale());
-            ioService.println(messageforUser);
-            exit(1);
-            return null;
-        }
+        return questions;
     }
 
-    @Override
-    public void run(String... args) {
+    public void processor() {
         Student student = getStudent();
         Test test = runTest(student);
-        String succecful = messageSource.getMessage("output.successful", new String[]{}, appProps.locale());
-        String failed = messageSource.getMessage("output.failed", new String[]{}, appProps.locale());
-        String result = messageSource.getMessage("output.result",
+        String result = getResult(test);
+        ioService.println(result);
+        String statistics = messageSource.getMessage("output.result",
                 new String[]{student.name(), student.secondName(), Integer.toString(test.result())},
                 appProps.locale());
+        ioService.println(statistics);
+    }
 
+    private String getResult(Test test) {
         if (test.result() > appProps.rightAnswers()) {
-            ioService.println(succecful);
+            return messageSource.getMessage("output.successful", new String[]{}, appProps.locale());
         } else {
-            ioService.println(failed);
+            return messageSource.getMessage("output.failed", new String[]{}, appProps.locale());
         }
-        ioService.println(result);
     }
 }

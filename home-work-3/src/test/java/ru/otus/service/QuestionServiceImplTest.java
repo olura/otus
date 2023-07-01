@@ -13,7 +13,6 @@ import ru.otus.model.Question;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.BDDMockito.given;
@@ -40,8 +39,8 @@ public class QuestionServiceImplTest {
         answers.add(new Answer("Ivan"));
         answers.get(3).setItIsRightAnswer();
         questions.add(new Question(1, "what is the name of the teacher", answers));
-        given(questionDao.getAllQuestions()).willReturn(Optional.of(questions));
+        given(questionDao.getAllQuestions()).willReturn(questions);
 
-        assertEquals(questionService.getQuestions(), Optional.of(questions));
+        assertEquals(questionService.getQuestions(), questions);
     }
 }

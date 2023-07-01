@@ -3,10 +3,9 @@ package ru.otus.dao;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
-import ru.otus.configuration.AppProps;
+import ru.otus.configuration.FileSourceProvider;
 import ru.otus.exception.DataLoadingException;
 import ru.otus.model.Answer;
 import ru.otus.model.Question;
@@ -21,21 +20,17 @@ import java.util.Optional;
 @Component
 public class QuestionDaoCsv implements QuestionDao{
 
-    private final AppProps appProps;
-    
-    private final MessageSource messageSource;
+    private final FileSourceProvider fileSourceProvider;
 
     @Autowired
-    public QuestionDaoCsv(AppProps appProps, MessageSource messageSource) {
-        this.appProps = appProps;
-        this.messageSource = messageSource;
+    public QuestionDaoCsv(FileSourceProvider fileSourceProvider) {
+        this.fileSourceProvider = fileSourceProvider;
     }
 
     @Override
-    public Optional <List<Question>> getAllQuestions() throws DataLoadingException {
+    public List<Question> getAllQuestions() throws DataLoadingException {
         List<Question> questionList = new ArrayList<>();
-        String fileName = messageSource.getMessage("get.fileName", new String[]{}, appProps.locale());
-        ClassPathResource resource = new ClassPathResource(fileName);
+        ClassPathResource resource = new ClassPathResource(fileSourceProvider.getFileName());
 
         try (Reader reader = new InputStreamReader(resource.getInputStream());
              CSVReader csvReader = new CSVReader(reader)) {
@@ -50,7 +45,7 @@ public class QuestionDaoCsv implements QuestionDao{
         } catch (IOException | CsvValidationException e) {
             throw new DataLoadingException("Error during questions loading", e);
         }
-        return Optional.of(questionList);
+        return questionList;
     }
 
     private String[] getFirstQuestionLine(CSVReader csvReader)
@@ -85,7 +80,12 @@ public class QuestionDaoCsv implements QuestionDao{
 
     private List<Answer> getAnswers(String[] nextRecord) throws DataLoadingException {
         List<Answer> answers = new ArrayList<>();
-        int numberRightAnswer = Integer.parseInt(nextRecord[7]) - 1;
+        int numberRightAnswer = 0;
+        String answer = nextRecord[7];
+
+        if (answer.length() > 0 && Character.isDigit(answer.charAt(0))) {
+            numberRightAnswer = Integer.parseInt(answer) - 1;
+        }
 
         for (int i = 2; i < 7; i++) {
             answers.add(new Answer(nextRecord[i]));
