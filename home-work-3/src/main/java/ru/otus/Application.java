@@ -10,6 +10,6 @@ public class Application {
 	public static void main(String[] args) {
 		var context = SpringApplication.run(Application.class, args);
 		TestService testService = context.getBean(TestService.class);
-		testService.processor();
+		testService.startTest();
 	}
 }

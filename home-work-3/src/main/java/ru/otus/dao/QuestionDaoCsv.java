@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
-public class QuestionDaoCsv implements QuestionDao{
+public class QuestionDaoCsv implements QuestionDao {
 
     private final FileSourceProvider fileSourceProvider;
 

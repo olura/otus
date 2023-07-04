@@ -4,24 +4,18 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 import ru.otus.configuration.LocaleProvider;
 
-import java.util.Locale;
-
 @Component
 public class LocalizationService {
     private final MessageSource messageSource;
 
-    private final Locale locale;
+    private final LocaleProvider localeProvider;
 
     public LocalizationService(MessageSource messageSource, LocaleProvider localeProvider) {
         this.messageSource = messageSource;
-        this.locale = localeProvider.getLocale();
+        this.localeProvider = localeProvider;
     }
 
-    public MessageSource getMessageSource() {
-        return messageSource;
-    }
-
-    public Locale getLocale() {
-        return locale;
+    public String getMessage(String message, String ... args) {
+        return messageSource.getMessage(message, args, localeProvider.getLocale());
     }
 }

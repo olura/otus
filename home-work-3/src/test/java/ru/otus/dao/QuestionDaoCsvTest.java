@@ -25,7 +25,7 @@ public class QuestionDaoCsvTest {
     @InjectMocks
     private QuestionDaoCsv questionDao;
     @Mock
-    FileSourceProvider fileSourceProvider;
+    private FileSourceProvider fileSourceProvider;
 
     @BeforeEach
     void loadProperties() throws IOException {

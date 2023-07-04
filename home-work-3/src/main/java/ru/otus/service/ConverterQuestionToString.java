@@ -1,26 +1,21 @@
 package ru.otus.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import ru.otus.model.Answer;
 import ru.otus.model.Question;
 
-import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Service
 public class ConverterQuestionToString implements Converter {
 
-    private final MessageSource messageSource;
-
-    private final Locale locale;
+    private final LocalizationService localizationService;
 
     @Autowired
     public ConverterQuestionToString(LocalizationService localizationService) {
-        this.messageSource = localizationService.getMessageSource();
-        this.locale = localizationService.getLocale();
+        this.localizationService = localizationService;
     }
 
     private String convertAnswerToString(int sequenceNumberOfAnswer, Answer answer) {
@@ -29,8 +24,8 @@ public class ConverterQuestionToString implements Converter {
 
     @Override
     public String convertQuestionToString(Question question) {
-        String questionPrompt = messageSource.getMessage("output.questionPrompt", new String[]{}, locale);
-        String answerPrompt = messageSource.getMessage("output.answerPrompt", new String[]{}, locale);
+        String questionPrompt = localizationService.getMessage("output.questionPrompt");
+        String answerPrompt = localizationService.getMessage("output.answerPrompt");
 
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(questionPrompt);

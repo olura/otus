@@ -35,6 +35,17 @@ public class TestService {
         this.appProps = appProps;
     }
 
+    public void startTest() {
+        Student student = getStudent();
+        Test test = testingStudent(student);
+        String result = getTestResult(test);
+        ioService.println(result);
+        String statistics = messageSource.getMessage("output.result",
+                new String[]{student.name(), student.secondName(), Integer.toString(test.result())},
+                appProps.locale());
+        ioService.println(statistics);
+    }
+
     private Student getStudent() {
         String messageforUser;
         
@@ -47,7 +58,7 @@ public class TestService {
         return new Student(name, secondName);
     }
 
-    private Test runTest(Student student) {
+    private Test testingStudent(Student student) {
         int result = 0;
         List<Question> questions = getQuestions();
 
@@ -76,18 +87,8 @@ public class TestService {
         return questions;
     }
 
-    public void processor() {
-        Student student = getStudent();
-        Test test = runTest(student);
-        String result = getResult(test);
-        ioService.println(result);
-        String statistics = messageSource.getMessage("output.result",
-                new String[]{student.name(), student.secondName(), Integer.toString(test.result())},
-                appProps.locale());
-        ioService.println(statistics);
-    }
 
-    private String getResult(Test test) {
+    private String getTestResult(Test test) {
         if (test.result() > appProps.rightAnswers()) {
             return messageSource.getMessage("output.successful", new String[]{}, appProps.locale());
         } else {

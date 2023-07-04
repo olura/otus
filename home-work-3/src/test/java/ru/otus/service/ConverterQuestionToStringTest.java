@@ -18,16 +18,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
-@DisplayName("Класс ConverterImpl ")
+@DisplayName("Класс ConverterQuestionToString ")
 @ExtendWith(MockitoExtension.class)
 public class ConverterQuestionToStringTest {
-
     @Mock
-    private LocaleProvider localeProvider;
-    @Mock
-    private MessageSource messageSource;
-    @InjectMocks
     private LocalizationService localizationService;
+    @InjectMocks
+    private ConverterQuestionToString converter;
 
     @DisplayName("корректно конвертирует вопрос в строку")
     @Test
@@ -36,9 +33,8 @@ public class ConverterQuestionToStringTest {
         answers.add(new Answer("Spring"));
 
         Question question = new Question(1, "what is the name of the teacher", answers);
-        given(messageSource.getMessage(any(), any(), any())).willReturn("");
+        given(localizationService.getMessage(any())).willReturn("");
 
-        ConverterQuestionToString converter = new ConverterQuestionToString(localizationService);
         String questionToString = converter.convertQuestionToString(question);
 
         assertThat(questionToString).contains(Integer.toString(question.id()));

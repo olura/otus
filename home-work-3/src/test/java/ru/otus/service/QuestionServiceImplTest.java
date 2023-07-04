@@ -17,7 +17,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.BDDMockito.given;
 
-@DisplayName("Класс QuestionServiceImplTest ")
+@DisplayName("Класс QuestionServiceImpl ")
 @ExtendWith(MockitoExtension.class)
 public class QuestionServiceImplTest {
 
