@@ -1,0 +1,9 @@
+spring:
+  messages:
+    basename: "localization/messages"
+    encoding: "UTF-8"
+
+app:
+  rightAnswers: 4
+  locale: en_EN
+  fileName: questions_${app.locale}.csv
