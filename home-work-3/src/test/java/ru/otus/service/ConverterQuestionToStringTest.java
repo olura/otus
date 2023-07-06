@@ -35,7 +35,7 @@ public class ConverterQuestionToStringTest {
         Question question = new Question(1, "what is the name of the teacher", answers);
         given(localizationService.getMessage(any())).willReturn("");
 
-        String questionToString = converter.convertQuestionToString(question);
+        String questionToString = converter.convertQuestionToString(question, localizationService);
 
         assertThat(questionToString).contains(Integer.toString(question.id()));
         assertThat(questionToString).contains(question.questionText());
