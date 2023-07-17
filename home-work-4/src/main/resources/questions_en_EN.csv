@@ -1,0 +1,6 @@
+id,questionText,answerText1,answerText2,answerText3,answerText5,answerText6,rightAnswer
+1,what is the name of the teacher,Tom,Bob,Aleksandr,Mike,Ivan,3
+2,what is the name of the subject,Java,Spring,C#,C++,C,2
+3,on what day are classes held,Monday,Tuesday,Wednesday,Thursday,Saturday,2
+4,what time do classes take place,12:00,16:00,18:00,20:00,21:00,4
+5,how many hours does the class last,1,2,3,4,unknown,2
