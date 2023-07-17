@@ -5,5 +5,5 @@ import ru.otus.model.Question;
 
 @Service
 public interface Converter {
-    String convertQuestionToString(Question question);
+    String convertQuestionToString(Question question, LocalizationService localizationService);
 }

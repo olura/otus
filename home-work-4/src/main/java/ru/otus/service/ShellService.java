@@ -2,7 +2,6 @@ package ru.otus.service;
 
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
-import org.springframework.shell.standard.ShellOption;
 
 @ShellComponent
 public class ShellService {
@@ -15,7 +14,7 @@ public class ShellService {
 
     @ShellMethod(key = {"t", "test"}, value = "Start test")
     public void start() {
-        testService.startTesting();
+        testService.startTest();
     }
 
 }

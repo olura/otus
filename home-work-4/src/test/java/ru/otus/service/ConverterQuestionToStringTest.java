@@ -2,12 +2,9 @@ package ru.otus.service;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.context.MessageSource;
-import ru.otus.configuration.LocaleProvider;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import ru.otus.model.Answer;
 import ru.otus.model.Question;
 
@@ -19,15 +16,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 @DisplayName("Класс ConverterImpl ")
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest(properties = "spring.shell.interactive.enabled=false", classes = ConverterQuestionToString.class)
 public class ConverterQuestionToStringTest {
-
-    @Mock
-    private LocaleProvider localeProvider;
-    @Mock
-    private MessageSource messageSource;
-    @InjectMocks
+    @MockBean
     private LocalizationService localizationService;
+    @Autowired
+    private ConverterQuestionToString converter;
 
     @DisplayName("корректно конвертирует вопрос в строку")
     @Test
@@ -36,10 +30,9 @@ public class ConverterQuestionToStringTest {
         answers.add(new Answer("Spring"));
 
         Question question = new Question(1, "what is the name of the teacher", answers);
-        given(messageSource.getMessage(any(), any(), any())).willReturn("");
+        given(localizationService.getMessage(any())).willReturn("");
 
-        ConverterQuestionToString converter = new ConverterQuestionToString(localizationService);
-        String questionToString = converter.convertQuestionToString(question);
+        String questionToString = converter.convertQuestionToString(question, localizationService);
 
         assertThat(questionToString).contains(Integer.toString(question.id()));
         assertThat(questionToString).contains(question.questionText());

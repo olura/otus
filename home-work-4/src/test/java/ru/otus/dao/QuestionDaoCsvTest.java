@@ -3,10 +3,9 @@ package ru.otus.dao;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import ru.otus.configuration.FileSourceProvider;
 import ru.otus.exception.DataLoadingException;
 import ru.otus.model.Question;
@@ -20,12 +19,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.BDDMockito.given;
 
 @DisplayName("Класс QuestionDaoCsv ")
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest(properties = "spring.shell.interactive.enabled=false", classes = QuestionDaoCsv.class)
 public class QuestionDaoCsvTest {
 
-    @InjectMocks
+    @Autowired
     private QuestionDaoCsv questionDao;
-    @Mock
+    @MockBean
     private FileSourceProvider fileSourceProvider;
 
     @BeforeEach

@@ -2,10 +2,9 @@ package ru.otus.service;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import ru.otus.dao.QuestionDao;
 import ru.otus.exception.DataLoadingException;
 import ru.otus.model.Answer;
@@ -18,12 +17,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.BDDMockito.given;
 
 @DisplayName("Класс QuestionServiceImplTest ")
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest(properties = "spring.shell.interactive.enabled=false", classes = QuestionServiceImpl.class)
 public class QuestionServiceImplTest {
 
-    @Mock
+    @MockBean
     private QuestionDao questionDao;
-    @InjectMocks
+    @Autowired
     private QuestionServiceImpl questionService;
 
     @DisplayName("должен корректно возвращать список вопросов")

@@ -1,9 +1,8 @@
 package ru.otus.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
-import ru.otus.configuration.AppProps;
+import ru.otus.configuration.AnswerSettingProvider;
 import ru.otus.exception.DataLoadingException;
 import ru.otus.model.Question;
 import ru.otus.model.Student;
@@ -21,39 +20,49 @@ public class TestService {
 
     private final QuestionServiceImpl questionService;
 
-    private final MessageSource messageSource;
+    private final LocalizationService localizationService;
 
-    private final AppProps appProps;
+    private final AnswerSettingProvider appProps;
 
     @Autowired
-    public TestService(IOService ioService, Converter converter,
-                       QuestionServiceImpl questionService, MessageSource messageSource, AppProps appProps) {
+    public TestService(IOService ioService, Converter converter, QuestionServiceImpl questionService,
+                       LocalizationService localizationService, AnswerSettingProvider appProps) {
         this.ioService = ioService;
         this.converter = converter;
         this.questionService = questionService;
-        this.messageSource = messageSource;
+        this.localizationService = localizationService;
         this.appProps = appProps;
+    }
+
+    public void startTest() {
+        Student student = getStudent();
+        Test test = testingStudent(student);
+        String result = getTestResult(test);
+        ioService.println(result);
+        String statistics = localizationService.getMessage("output.result",
+                student.name(), student.secondName(), Integer.toString(test.result()));
+        ioService.println(statistics);
     }
 
     private Student getStudent() {
         String messageforUser;
-        
-        messageforUser = messageSource.getMessage("get.username", new String[]{}, appProps.locale());
+
+        messageforUser = localizationService.getMessage("get.username");
         String name = ioService.readLineWithPrompt(messageforUser);
-        
-        messageforUser = messageSource.getMessage("get.secondName", new String[]{}, appProps.locale());
+
+        messageforUser = localizationService.getMessage("get.secondName");
         String secondName =  ioService.readLineWithPrompt(messageforUser);
-        
+
         return new Student(name, secondName);
     }
 
-    private Test runTest(Student student) {
+    private Test testingStudent(Student student) {
         int result = 0;
         List<Question> questions = getQuestions();
 
-        String prompt = messageSource.getMessage("output.getAnswer", new String[]{}, appProps.locale());
+        String prompt = localizationService.getMessage("output.getAnswer");
         for (Question question : questions) {
-            ioService.printlnWithPrompt(converter.convertQuestionToString(question), prompt);
+            ioService.printlnWithPrompt(converter.convertQuestionToString(question, localizationService), prompt);
             int studentAnswer = ioService.readInt();
             if (studentAnswer == question.getNumberRightAnswer()) {
                 result++;
@@ -68,30 +77,20 @@ public class TestService {
         try {
             questions = questionService.getQuestions();
         } catch (DataLoadingException e) {
-            String error = messageSource.getMessage("output.error", new String[]{}, appProps.locale());
+            String error = localizationService.getMessage("output.error");
             ioService.println(error + e.getMessage());
-            String testStopped = messageSource.getMessage("output.testStopped", new String[]{}, appProps.locale());
+            String testStopped = localizationService.getMessage("output.testStopped");
             ioService.println(testStopped);
         }
         return questions;
     }
 
-    public void startTesting() {
-        Student student = getStudent();
-        Test test = runTest(student);
-        String result = getResult(test);
-        ioService.println(result);
-        String statistics = messageSource.getMessage("output.result",
-                new String[]{student.name(), student.secondName(), Integer.toString(test.result())},
-                appProps.locale());
-        ioService.println(statistics);
-    }
 
-    private String getResult(Test test) {
-        if (test.result() > appProps.rightAnswers()) {
-            return messageSource.getMessage("output.successful", new String[]{}, appProps.locale());
+    private String getTestResult(Test test) {
+        if (test.result() > appProps.getRightAnswer()) {
+            return localizationService.getMessage("output.successful");
         } else {
-            return messageSource.getMessage("output.failed", new String[]{}, appProps.locale());
+            return localizationService.getMessage("output.failed");
         }
     }
 }
