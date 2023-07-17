@@ -34,26 +34,12 @@ public class TestService {
         this.appProps = appProps;
     }
 
-    public void startTest() {
-        Student student = getStudent();
+    public void startTest(Student student) {
         Test test = testingStudent(student);
-        String result = getTestResult(test);
-        ioService.println(result);
+        ioService.println(getTestResult(test));
         String statistics = localizationService.getMessage("output.result",
                 student.name(), student.secondName(), Integer.toString(test.result()));
         ioService.println(statistics);
-    }
-
-    private Student getStudent() {
-        String messageforUser;
-
-        messageforUser = localizationService.getMessage("get.username");
-        String name = ioService.readLineWithPrompt(messageforUser);
-
-        messageforUser = localizationService.getMessage("get.secondName");
-        String secondName =  ioService.readLineWithPrompt(messageforUser);
-
-        return new Student(name, secondName);
     }
 
     private Test testingStudent(Student student) {
