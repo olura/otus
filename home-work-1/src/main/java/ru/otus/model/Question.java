@@ -11,7 +11,7 @@ public class Question {
 
     private List<Answer> answers;
 
-    public Question(){
+    public Question() {
     }
 
     public Question(int id, String questionText, List<Answer> answersText) {
