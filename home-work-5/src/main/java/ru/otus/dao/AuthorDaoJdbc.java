@@ -22,9 +22,9 @@ public class AuthorDaoJdbc implements AuthorDao {
         this.jdbcOperations = jdbcOperations;
     }
 
-    public Optional<Author> getByName(String name) {
-        return Optional.of(jdbcOperations.queryForObject("SELECT id, name FROM Author WHERE name =:name",
-                Map.of("name", name), new BeanPropertyRowMapper<>(Author.class)));
+    public Optional<Author> getById(long id) {
+        return Optional.of(jdbcOperations.queryForObject("SELECT id, name FROM Author WHERE id =:id",
+                Map.of("id", id), new BeanPropertyRowMapper<>(Author.class)));
     }
 
     public List<Author> getAll() {

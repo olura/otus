@@ -20,9 +20,9 @@ public class GenreDaoJdbc implements GenreDao {
         this.jdbcOperations = jdbcOperations;
     }
 
-    public Optional<Genre> getByName(String title) {
-        return Optional.of((Genre)this.jdbcOperations.queryForObject("SELECT id, title FROM Genre WHERE title =:title",
-                Map.of("title", title), new BeanPropertyRowMapper<>(Genre.class)));
+    public Optional<Genre> getById(long id) {
+        return Optional.of((Genre)this.jdbcOperations.queryForObject("SELECT id, title FROM Genre WHERE id =:id",
+                Map.of("id", id), new BeanPropertyRowMapper<>(Genre.class)));
     }
 
     public List<Genre> getAll() {

@@ -5,7 +5,7 @@ import java.util.Optional;
 import ru.otus.domain.Author;
 
 public interface AuthorDao {
-    Optional<Author> getByName(String name);
+    Optional<Author> getById(long id);
 
     List<Author> getAll();
 
