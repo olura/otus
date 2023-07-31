@@ -21,40 +21,57 @@ import java.util.Optional;
 public class BookDaoJdbc implements BookDao {
     private final NamedParameterJdbcOperations jdbcOperations;
 
+    private final AuthorDao authorDao;
+
+    private final GenreDao genreDao;
+
     @Autowired
-    public BookDaoJdbc(NamedParameterJdbcOperations jdbcOperations) {
+    public BookDaoJdbc(NamedParameterJdbcOperations jdbcOperations, AuthorDao authorDao, GenreDao genreDao) {
         this.jdbcOperations = jdbcOperations;
+        this.authorDao = authorDao;
+        this.genreDao = genreDao;
     }
 
     public Optional<Book> getById(long id) {
-        return Optional.of(jdbcOperations.queryForObject("SELECT b.id, b.title, b.author_id, a.name, b.genre_id, g.title g_title " +
-                        "FROM Book b, Author a, Genre g WHERE b.author_id=a.id and b.genre_id=g.id and b.id =:id",
+        return Optional.of(jdbcOperations.queryForObject(
+                "SELECT b.id, b.title, b.author_id, a.name, b.genre_id, g.title g_title " +
+                    "FROM Book b, Author a, Genre g WHERE b.author_id=a.id and b.genre_id=g.id and b.id =:id",
                 Map.of("id", id), new BookMapper()));
     }
 
     public List<Book> getAll() {
-        return this.jdbcOperations.query("SELECT b.id, b.title, b.author_id, a.name, b.genre_id, g.title g_title " +
+        return jdbcOperations.query("SELECT b.id, b.title, b.author_id, a.name, b.genre_id, g.title g_title " +
                 "FROM Book b, Author a, Genre g WHERE b.author_id=a.id and b.genre_id=g.id", new BookMapper());
     }
 
     public Book insert(Book book) {
+        long authorId = authorDao.insert(book.getAuthor()).getId();
+        long genreId = genreDao.insert(book.getGenre()).getId();
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("title", book.getTitle());
-        params.addValue("author", book.getAuthor().getId());
-        params.addValue("genre", book.getGenre().getId());
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        this.jdbcOperations.update("INSERT INTO Book (title, author_id, genre_id) VALUES (:title, :author , :genre)",
-                params, keyHolder, new String[]{"id"});
+        params.addValue("author_id", authorId);
+        params.addValue("genre_id", genreId);
+
+        jdbcOperations.update("INSERT INTO Book (title, author_id, genre_id) " +
+                        "VALUES (:title, :author_id, :genre_id)", params, keyHolder, new String[]{"id"});
         book.setId(keyHolder.getKey().longValue());
         return book;
     }
 
     public void update(Book book) {
+        long authorId = authorDao.insert(book.getAuthor()).getId();
+        long genreId = genreDao.insert(book.getGenre()).getId();
+
         MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("id", book.getId());
         params.addValue("title", book.getTitle());
-        params.addValue("author", book.getAuthor());
-        params.addValue("genre", book.getGenre());
-        this.jdbcOperations.update("UPDATE Book SET title=:title, author=:author, genre=:genre", params);
+        params.addValue("author_id", authorId);
+        params.addValue("genre_id", genreId);
+
+        jdbcOperations.update("UPDATE Book SET title=:title, author_id=:author_id, genre_id=:genre_id WHERE id=:id",
+                params);
     }
 
     public void deleteById(long id) {

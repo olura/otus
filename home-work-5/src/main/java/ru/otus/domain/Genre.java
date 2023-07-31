@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class Genre {
     private long id;
+
     private String title;
 
     public Genre(String title) {

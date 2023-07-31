@@ -8,10 +8,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 public class Book {
-    long id;
-    String title;
-    Author author;
-    Genre genre;
+    private long id;
+
+    private String title;
+
+    private Author author;
+
+    private Genre genre;
 
     public Book(String title, Author author, Genre genre) {
         this.title = title;

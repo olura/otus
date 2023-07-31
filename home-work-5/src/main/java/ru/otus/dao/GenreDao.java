@@ -5,7 +5,9 @@ import java.util.Optional;
 import ru.otus.domain.Genre;
 
 public interface GenreDao {
-    Optional<Genre> getById(long id);
+    Optional<Genre> getByName(String title);
 
     List<Genre> getAll();
+
+    Genre insert(Genre genre);
 }
