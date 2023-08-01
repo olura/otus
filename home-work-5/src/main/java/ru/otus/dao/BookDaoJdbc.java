@@ -33,10 +33,10 @@ public class BookDaoJdbc implements BookDao {
     }
 
     public Optional<Book> getById(long id) {
-        return Optional.of(jdbcOperations.queryForObject(
+        return jdbcOperations.query(
                 "SELECT b.id, b.title, b.author_id, a.name, b.genre_id, g.title g_title " +
                     "FROM Book b, Author a, Genre g WHERE b.author_id=a.id and b.genre_id=g.id and b.id =:id",
-                Map.of("id", id), new BookMapper()));
+                Map.of("id", id), new BookMapper()).stream().findAny();
     }
 
     public List<Book> getAll() {

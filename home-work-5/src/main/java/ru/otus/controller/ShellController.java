@@ -5,6 +5,7 @@ import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 import ru.otus.domain.Book;
+import ru.otus.exception.NoFoundBookException;
 import ru.otus.service.BookService;
 
 import java.util.Arrays;
@@ -23,7 +24,13 @@ public class ShellController {
 
     @ShellMethod(key = {"f", "find"}, value = "Find book by id")
     public String getById (@ShellOption Long id) {
-        Book book = bookService.getById(id).get();
+        Book book = null;
+        try {
+            book = bookService.getById(id).orElseThrow(
+                    () -> new NoFoundBookException("The book was not found"));
+        } catch (NoFoundBookException e) {
+            return e.getMessage();
+        }
         return convertListBooksToString(Arrays.asList(book));
     }
 
@@ -56,12 +63,14 @@ public class ShellController {
 
     private String convertListBooksToString(List<Book> books) {
         final String ansiReset = "\u001B[0m";
+        final String ansiBold = "\u001B[1m";
         final String ansiBlack = "\u001B[30m";
         final String ansiUnderlined = "\u001B[4m";
 
         StringBuilder sb = new StringBuilder();
         Formatter formatter = new Formatter(sb);
-        formatter.format("%s|%-30s|%-20s|%-10s|%s\n", ansiUnderlined, "Title", "Author", "Genre", ansiReset);
+        formatter.format("|%s%s%-30s|%-20s|%-10s%s|\n",
+                ansiUnderlined, ansiBold, "Title", "Author", "Genre", ansiReset);
 
         for (Book book: books) {
             formatter.format("%s|%-30s|%-20s|%-10s|%s\n",

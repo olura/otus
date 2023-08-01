@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.dao.EmptyResultDataAccessException;
 import ru.otus.dao.AuthorDaoJdbc;
 import ru.otus.dao.BookDaoJdbc;
 import ru.otus.dao.GenreDaoJdbc;
@@ -14,6 +13,7 @@ import ru.otus.domain.Book;
 import ru.otus.domain.Genre;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -87,7 +87,7 @@ public class BookServiceImplTest {
         int beforeSize =  bookService.getAll().size();
 
         bookService.deleteById(1);
-        assertThrows(EmptyResultDataAccessException.class, () -> bookService.getById(1).get());
+        assertThrows(NoSuchElementException.class, () -> bookService.getById(1).get());
 
         int afterSize =  bookService.getAll().size();
         assertEquals(beforeSize - 1, afterSize);

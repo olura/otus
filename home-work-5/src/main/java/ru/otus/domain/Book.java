@@ -16,12 +16,6 @@ public class Book {
 
     private Genre genre;
 
-    public Book(String title, Author author, Genre genre) {
-        this.title = title;
-        this.author = author;
-        this.genre = genre;
-    }
-
     public Book(String title, String authorName, String genreTitle) {
         this.title = title;
         this.author = new Author(authorName);
