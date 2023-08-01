@@ -12,14 +12,13 @@ import ru.otus.model.Question;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Properties;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.BDDMockito.given;
 
 @DisplayName("Класс QuestionDaoCsv ")
-@SpringBootTest(properties = "spring.shell.interactive.enabled=false", classes = QuestionDaoCsv.class)
+@SpringBootTest(classes = QuestionDaoCsv.class)
 public class QuestionDaoCsvTest {
 
     @Autowired
@@ -29,10 +28,7 @@ public class QuestionDaoCsvTest {
 
     @BeforeEach
     void loadProperties() throws IOException {
-        Properties prop = new Properties();
-        prop.load(getClass().getClassLoader().getResourceAsStream("test.properties"));
-        String file = prop.getProperty("fileName");
-        given(fileSourceProvider.getFileName()).willReturn(file);
+        given(fileSourceProvider.getFileName()).willReturn("questions.csv");
     }
 
     @Test

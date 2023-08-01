@@ -63,8 +63,8 @@ public class TestService {
         try {
             questions = questionService.getQuestions();
         } catch (DataLoadingException e) {
-            String error = localizationService.getMessage("output.error");
-            ioService.println(error + e.getMessage());
+            String error = localizationService.getMessage("output.error", e.getMessage());
+            ioService.println(error);
             String testStopped = localizationService.getMessage("output.testStopped");
             ioService.println(testStopped);
         }

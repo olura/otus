@@ -16,7 +16,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 @DisplayName("Класс ConverterImpl ")
-@SpringBootTest(properties = "spring.shell.interactive.enabled=false", classes = ConverterQuestionToString.class)
+@SpringBootTest(classes = ConverterQuestionToString.class)
 public class ConverterQuestionToStringTest {
     @MockBean
     private LocalizationService localizationService;

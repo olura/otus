@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.BDDMockito.given;
 
 @DisplayName("Класс QuestionServiceImplTest ")
-@SpringBootTest(properties = "spring.shell.interactive.enabled=false", classes = QuestionServiceImpl.class)
+@SpringBootTest(classes = QuestionServiceImpl.class)
 public class QuestionServiceImplTest {
 
     @MockBean

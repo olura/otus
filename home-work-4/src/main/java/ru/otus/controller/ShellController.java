@@ -1,4 +1,4 @@
-package ru.otus.service;
+package ru.otus.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.Availability;
@@ -7,9 +7,11 @@ import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellMethodAvailability;
 import org.springframework.shell.standard.ShellOption;
 import ru.otus.model.Student;
+import ru.otus.service.LocalizationService;
+import ru.otus.service.TestService;
 
 @ShellComponent
-public class ShellService {
+public class ShellController {
 
     private final TestService testService;
 
@@ -18,7 +20,7 @@ public class ShellService {
     private Student student;
 
     @Autowired
-    public ShellService(TestService testService, LocalizationService localizationService) {
+    public ShellController(TestService testService, LocalizationService localizationService) {
         this.testService = testService;
         this.localizationService = localizationService;
     }
@@ -33,7 +35,7 @@ public class ShellService {
     @ShellMethod(key = {"login", "l"}, value = "Enter first name and second name")
     public String login (@ShellOption String name, @ShellOption String secondName) {
         student = new Student(name, secondName);
-        return localizationService.getMessage("output.welcome") + name + " " + secondName;
+        return localizationService.getMessage("output.welcome", name, secondName);
     }
 
     private Availability isStartTestAvailable() {

@@ -55,7 +55,7 @@ public class TestService {
         for (Question question : questions) {
             ioService.printlnWithPrompt(converter.convertQuestionToString(question), prompt);
             int studentAnswer = ioService.readInt();
-            if(studentAnswer == question.getNumberRightAnswer()) {
+            if (studentAnswer == question.getNumberRightAnswer()) {
                 result++;
             }
         }
