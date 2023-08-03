@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DisplayName("Класс BookDaoJdbc ")
 @JdbcTest
-@Import({BookDaoJdbc.class, AuthorDaoJdbc.class, GenreDaoJdbc.class})
+@Import({BookDaoJdbc.class, AuthorDaoORM.class, GenreDaoJdbc.class})
 public class BookDaoJdbcTest {
 
     private final BookDao bookDao;

@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
-import ru.otus.dao.AuthorDaoJdbc;
+import ru.otus.dao.AuthorDaoORM;
 import ru.otus.dao.BookDaoJdbc;
 import ru.otus.dao.GenreDaoJdbc;
 import ru.otus.domain.Author;
@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DisplayName("Класс BookServiceImpl ")
 @JdbcTest
-@Import({BookServiceImpl.class, BookDaoJdbc.class, AuthorDaoJdbc.class, GenreDaoJdbc.class})
+@Import({BookServiceImpl.class, BookDaoJdbc.class, AuthorDaoORM.class, GenreDaoJdbc.class})
 public class BookServiceImplTest {
 
     private final BookServiceImpl bookService;
