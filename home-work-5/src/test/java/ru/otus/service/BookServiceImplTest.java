@@ -2,8 +2,10 @@ package ru.otus.service;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import ru.otus.dao.AuthorDaoJdbc;
 import ru.otus.dao.BookDaoJdbc;
@@ -12,23 +14,26 @@ import ru.otus.domain.Author;
 import ru.otus.domain.Book;
 import ru.otus.domain.Genre;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doNothing;
 
 @DisplayName("Класс BookServiceImpl ")
 @JdbcTest
 @Import({BookServiceImpl.class, BookDaoJdbc.class, AuthorDaoJdbc.class, GenreDaoJdbc.class})
 public class BookServiceImplTest {
 
-    private final BookServiceImpl bookService;
-
     @Autowired
-    public BookServiceImplTest(BookServiceImpl bookService) {
-        this.bookService = bookService;
-    }
+    private BookServiceImpl bookService;
+
+    @MockBean
+    private BookDaoJdbc bookDaoJdbc;
 
     @DisplayName("возвращает ожидаемую книгу по её id")
     @Test
@@ -36,6 +41,9 @@ public class BookServiceImplTest {
         Author author = new Author(1,"Pushkin");
         Genre genre = new Genre(1, "Romance");
         Book expectedBook = new Book(1,"Evgeniy Onegin", author, genre);
+
+        given(bookDaoJdbc.getById(anyLong())).willReturn((Optional.of(expectedBook)));
+
         Book actualBook = bookService.getById(expectedBook.getId()).get();
         assertEquals(expectedBook, actualBook);
     }
@@ -43,53 +51,59 @@ public class BookServiceImplTest {
     @DisplayName("возвращает ожидаемый список книг")
     @Test
     void shouldReturnExpectedBookList() {
-        List<Book> books = bookService.getAll();
-        assertEquals(2, books.size());
+
+        Author author1 = new Author(1,"Pushkin");
+        Genre genre1 = new Genre(1, "Romance");
+        Author author2 = new Author(2,"Test_author");
+        Genre genre2 = new Genre(2, "Test_genre");
+
+        List<Book> expectedBooks = new ArrayList<>();
+        expectedBooks.add(new Book(1,"Evgeniy Onegin", author1, genre1));
+        expectedBooks.add(new Book(2,"Test book", author2, genre2));
+
+        given(bookDaoJdbc.getAll()).willReturn(expectedBooks);
+
+        List<Book> actualBooks = bookService.getAll();
+        assertEquals(expectedBooks, actualBooks);
     }
 
     @DisplayName("добавляет книгу в БД")
     @Test
     void shouldInsertBook() {
-        int beforeSize =  bookService.getAll().size();
-
         Author author = new Author(1,"Test_author");
         Genre genre = new Genre(1, "Test_genre");
         Book expectedBook = new Book(1,"Test book", author, genre);
 
-        Book book = bookService.insert(expectedBook);
-        Book actualBook = bookService.getById(book.getId()).get();
-        assertEquals(expectedBook, actualBook);
+        given(bookDaoJdbc.insert(any())).willReturn(expectedBook);
 
-        int afterSize =  bookService.getAll().size();
-        assertEquals(beforeSize + 1, afterSize);
+        Book actualBook = bookService.insert(expectedBook);
+        assertEquals(expectedBook, actualBook);
     }
 
     @DisplayName("обновляет книгу в БД")
     @Test
     void shouldUpdateBook() {
-        int beforeSize =  bookService.getAll().size();
-
         Author author = new Author(1,"Test_author");
         Genre genre = new Genre(1, "Test_genre");
         Book expectedBook = new Book(1,"Test book", author, genre);
 
-        bookService.update(expectedBook);
-        Book actualBook = bookService.getById(expectedBook.getId()).get();
-        assertEquals(expectedBook, actualBook);
+        ArgumentCaptor<Book> valueCapture = ArgumentCaptor.forClass(Book.class);
+        doNothing().when(bookDaoJdbc).update(valueCapture.capture());
 
-        int afterSize =  bookService.getAll().size();
-        assertEquals(beforeSize, afterSize);
+        bookService.update(expectedBook);
+        assertEquals(expectedBook, valueCapture.getValue());
     }
 
     @DisplayName("удаляет книгу в БД по её id")
     @Test
     void shouldDeleteBook() {
-        int beforeSize =  bookService.getAll().size();
 
-        bookService.deleteById(1);
-        assertThrows(NoSuchElementException.class, () -> bookService.getById(1).get());
+        long id = 1;
 
-        int afterSize =  bookService.getAll().size();
-        assertEquals(beforeSize - 1, afterSize);
+        ArgumentCaptor<Long> valueCapture = ArgumentCaptor.forClass(Long.class);
+        doNothing().when(bookDaoJdbc).deleteById(valueCapture.capture());
+
+        bookService.deleteById(id);
+        assertEquals(id, valueCapture.getValue());
     }
 }

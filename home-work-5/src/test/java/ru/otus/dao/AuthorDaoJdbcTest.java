@@ -6,10 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import ru.otus.domain.Author;
+import ru.otus.exception.AuthorExistException;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DisplayName("Класс AuthorDaoJdbc ")
 @JdbcTest
@@ -30,6 +32,14 @@ public class AuthorDaoJdbcTest {
         Author actualAuthor = authorDao.getById(expectedAuthor.getId()).get();
         assertEquals(expectedAuthor, actualAuthor);
     }
+
+    @DisplayName("возвращает ожидаемого автора по его имени")
+    @Test
+    void shouldReturnExpectedAuthorByName() {
+        Author expectedAuthor = new Author(1,"Pushkin");
+        Author actualAuthor = authorDao.getByName(expectedAuthor.getName()).get();
+        assertEquals(expectedAuthor, actualAuthor);
+    }
     @DisplayName("возвращает ожидаемый список авторов")
     @Test
     void shouldReturnExpectedAuthorList() {
@@ -39,7 +49,7 @@ public class AuthorDaoJdbcTest {
 
     @DisplayName("добавляет автора в БД если такого автора ещё нет")
     @Test
-    void shouldInsertAuthor() {
+    void shouldInsertAuthor() throws AuthorExistException {
         int beforeSize =  authorDao.getAll().size();
 
         Author expectedAuthor = new Author("Test_author");
@@ -50,9 +60,7 @@ public class AuthorDaoJdbcTest {
         int afterSize =  authorDao.getAll().size();
         assertEquals(beforeSize + 1, afterSize);
 
-        author = authorDao.insert(expectedAuthor);
-        actualAuthor = authorDao.getById(author.getId()).get();
-        assertEquals(expectedAuthor, actualAuthor);
+        assertThrows(AuthorExistException.class, () -> authorDao.insert(expectedAuthor));
 
         int afterInsertDuplicateSize =  authorDao.getAll().size();
         assertEquals(afterSize, afterInsertDuplicateSize);

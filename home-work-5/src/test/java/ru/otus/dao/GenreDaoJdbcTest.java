@@ -6,10 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import ru.otus.domain.Genre;
+import ru.otus.exception.GenreExistExeption;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DisplayName("Класс GenreDaoJdbcTest ")
 @JdbcTest
@@ -31,6 +33,14 @@ public class GenreDaoJdbcTest {
         assertEquals(expectedGenre, actualGenre);
     }
 
+    @DisplayName("возвращает ожидаемый жанр по его названию")
+    @Test
+    void shouldReturnExpectedGenreByTitle() {
+        Genre expectedGenre = new Genre(1,"Romance");
+        Genre actualGenre = genreDao.getByTitle(expectedGenre.getTitle()).get();
+        assertEquals(expectedGenre, actualGenre);
+    }
+
     @DisplayName("возвращает ожидаемый список жанров")
     @Test
     void shouldReturnExpectedGenreList() {
@@ -40,7 +50,7 @@ public class GenreDaoJdbcTest {
 
     @DisplayName("добавляет жанр в БД если такого жанра ещё нет")
     @Test
-    void shouldInsertGenre() {
+    void shouldInsertGenre() throws GenreExistExeption {
         int beforeSize =  genreDao.getAll().size();
 
         Genre expectedGenre = new Genre("Test_genre");
@@ -51,9 +61,7 @@ public class GenreDaoJdbcTest {
         int afterSize =  genreDao.getAll().size();
         assertEquals(beforeSize + 1, afterSize);
 
-        genre = genreDao.insert(expectedGenre);
-        actualGenre = genreDao.getById(genre.getId()).get();
-        assertEquals(expectedGenre, actualGenre);
+        assertThrows(GenreExistExeption.class, () -> genreDao.insert(expectedGenre));
 
         int afterInsertDuplicateSize =  genreDao.getAll().size();
         assertEquals(afterSize, afterInsertDuplicateSize);
