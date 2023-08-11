@@ -16,16 +16,10 @@ public class Book {
 
     private Genre genre;
 
-    public Book(String title, String authorName, String genreTitle) {
+    public Book(String title, Author author, Genre genre) {
         this.title = title;
-        this.author = new Author(authorName);
-        this.genre = new Genre(genreTitle);
+        this.author = author;
+        this.genre = genre;
     }
 
-    public Book(long id, String title, String authorName, String genreTitle) {
-        this.id = id;
-        this.title = title;
-        this.author = new Author(authorName);
-        this.genre = new Genre(genreTitle);
-    }
 }

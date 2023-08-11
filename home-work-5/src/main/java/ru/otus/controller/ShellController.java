@@ -24,7 +24,7 @@ public class ShellController {
 
     @ShellMethod(key = {"f", "find"}, value = "Find book by id")
     public String getById (@ShellOption Long id) {
-        Book book = null;
+        Book book;
         try {
             book = bookService.getById(id).orElseThrow(
                     () -> new NoFoundBookException("The book was not found"));
@@ -41,17 +41,15 @@ public class ShellController {
     }
 
     @ShellMethod(key = {"i", "insert"}, value = "Insert book")
-    public String insert(@ShellOption String title, @ShellOption String author, @ShellOption String genre) {
-        Book book = new Book(title, author, genre);
-        bookService.insert(book);
+    public String insert(@ShellOption String title, @ShellOption int author_id, @ShellOption int genre_id) {
+        bookService.insert(title, author_id, genre_id);
         return "The book insert was successful";
     }
 
     @ShellMethod(key = {"u", "update"}, value = "Update book")
     public String update(@ShellOption long id, @ShellOption String title,
-                         @ShellOption String author, @ShellOption String genre) {
-        Book book = new Book(id, title, author, genre);
-        bookService.update(book);
+                         @ShellOption int author_id, @ShellOption int genre_id) {
+        bookService.update(id, title, author_id, genre_id);
         return "The book update was successful";
     }
 

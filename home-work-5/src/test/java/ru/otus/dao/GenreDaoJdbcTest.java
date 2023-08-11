@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import ru.otus.domain.Genre;
-import ru.otus.exception.GenreExistExeption;
+import ru.otus.exception.GenreNotFoundExeption;
 
 import java.util.List;
 
@@ -50,7 +50,7 @@ public class GenreDaoJdbcTest {
 
     @DisplayName("добавляет жанр в БД если такого жанра ещё нет")
     @Test
-    void shouldInsertGenre() throws GenreExistExeption {
+    void shouldInsertGenre() throws GenreNotFoundExeption {
         int beforeSize =  genreDao.getAll().size();
 
         Genre expectedGenre = new Genre("Test_genre");
@@ -61,7 +61,7 @@ public class GenreDaoJdbcTest {
         int afterSize =  genreDao.getAll().size();
         assertEquals(beforeSize + 1, afterSize);
 
-        assertThrows(GenreExistExeption.class, () -> genreDao.insert(expectedGenre));
+        assertThrows(GenreNotFoundExeption.class, () -> genreDao.insert(expectedGenre));
 
         int afterInsertDuplicateSize =  genreDao.getAll().size();
         assertEquals(afterSize, afterInsertDuplicateSize);

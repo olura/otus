@@ -20,12 +20,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @Import({BookDaoJdbc.class, AuthorDaoJdbc.class, GenreDaoJdbc.class})
 public class BookDaoJdbcTest {
 
-    private final BookDao bookDao;
+    @Autowired
+    private BookDao bookDao;
 
     @Autowired
-    public BookDaoJdbcTest(BookDaoJdbc bookDao) {
-        this.bookDao = bookDao;
-    }
+    private AuthorDao authorDao;
+
+    @Autowired
+    private GenreDao genreDao;
 
     @DisplayName("возвращает ожидаемую книгу по её id")
     @Test
@@ -49,8 +51,8 @@ public class BookDaoJdbcTest {
     void shouldInsertBook() {
         int beforeSize =  bookDao.getAll().size();
 
-        Author author = new Author(1,"Test_author");
-        Genre genre = new Genre(1, "Test_genre");
+        Author author = authorDao.getById(1).get();
+        Genre genre = genreDao.getById(1).get();
         Book expectedBook = new Book(1,"Test book", author, genre);
 
         Book book = bookDao.insert(expectedBook);
@@ -66,8 +68,8 @@ public class BookDaoJdbcTest {
     void shouldUpdateBook() {
         int beforeSize =  bookDao.getAll().size();
 
-        Author author = new Author(1,"Test_author");
-        Genre genre = new Genre(1, "Test_genre");
+        Author author = authorDao.getById(1).get();
+        Genre genre = genreDao.getById(1).get();
         Book expectedBook = new Book(1,"Test book", author, genre);
 
         bookDao.update(expectedBook);

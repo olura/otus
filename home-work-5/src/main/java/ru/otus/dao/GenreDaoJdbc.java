@@ -8,7 +8,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.otus.domain.Genre;
-import ru.otus.exception.GenreExistExeption;
+import ru.otus.exception.GenreNotFoundExeption;
 
 import java.util.List;
 import java.util.Map;
@@ -42,7 +42,7 @@ public class GenreDaoJdbc implements GenreDao {
     }
 
     @Override
-    public Genre insert(Genre genre) throws GenreExistExeption {
+    public Genre insert(Genre genre) throws GenreNotFoundExeption {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         MapSqlParameterSource params = new MapSqlParameterSource();
 
@@ -52,7 +52,7 @@ public class GenreDaoJdbc implements GenreDao {
             jdbcOperations.update("INSERT INTO Genre (title) SELECT :genre_title",
                     params, keyHolder, new String[]{"id"});
         } catch (DuplicateKeyException e) {
-            throw new GenreExistExeption("The genre already exists");
+            throw new GenreNotFoundExeption("The genre already exists");
         }
         genre.setId(keyHolder.getKey().longValue());
 

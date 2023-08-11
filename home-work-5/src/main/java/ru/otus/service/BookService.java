@@ -11,9 +11,9 @@ public interface BookService {
 
     List<Book> getAll();
 
-    Book insert(Book book);
+    Book insert(String title, long authorId, long genreId);
 
-    void update(Book book);
+    void update(long id, String title, long authorId, long genreId);
 
     void deleteById(long id);
 }

@@ -9,7 +9,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.otus.domain.Author;
-import ru.otus.exception.AuthorExistException;
+import ru.otus.exception.AuthorNotFoundException;
 
 import java.util.List;
 import java.util.Map;
@@ -42,7 +42,7 @@ public class AuthorDaoJdbc implements AuthorDao {
     }
 
     @Override
-    public Author insert(Author author) throws AuthorExistException {
+    public Author insert(Author author) throws AuthorNotFoundException {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         MapSqlParameterSource params = new MapSqlParameterSource();
 
@@ -52,7 +52,7 @@ public class AuthorDaoJdbc implements AuthorDao {
             jdbcOperations.update("INSERT INTO Author (name) SELECT :author_name",
                     params, keyHolder, new String[]{"id"});
         } catch (DuplicateKeyException e) {
-            throw new AuthorExistException("The author already exists");
+            throw new AuthorNotFoundException("The author already exists");
         }
         author.setId(keyHolder.getKey().longValue());
 

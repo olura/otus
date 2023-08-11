@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import ru.otus.domain.Author;
-import ru.otus.exception.AuthorExistException;
+import ru.otus.exception.AuthorNotFoundException;
 
 import java.util.List;
 
@@ -49,7 +49,7 @@ public class AuthorDaoJdbcTest {
 
     @DisplayName("добавляет автора в БД если такого автора ещё нет")
     @Test
-    void shouldInsertAuthor() throws AuthorExistException {
+    void shouldInsertAuthor() throws AuthorNotFoundException {
         int beforeSize =  authorDao.getAll().size();
 
         Author expectedAuthor = new Author("Test_author");
@@ -60,7 +60,7 @@ public class AuthorDaoJdbcTest {
         int afterSize =  authorDao.getAll().size();
         assertEquals(beforeSize + 1, afterSize);
 
-        assertThrows(AuthorExistException.class, () -> authorDao.insert(expectedAuthor));
+        assertThrows(AuthorNotFoundException.class, () -> authorDao.insert(expectedAuthor));
 
         int afterInsertDuplicateSize =  authorDao.getAll().size();
         assertEquals(afterSize, afterInsertDuplicateSize);

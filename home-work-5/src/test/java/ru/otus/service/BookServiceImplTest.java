@@ -4,12 +4,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
-import ru.otus.dao.AuthorDaoJdbc;
-import ru.otus.dao.BookDaoJdbc;
-import ru.otus.dao.GenreDaoJdbc;
+import ru.otus.dao.AuthorDao;
+import ru.otus.dao.BookDao;
+import ru.otus.dao.GenreDao;
 import ru.otus.domain.Author;
 import ru.otus.domain.Book;
 import ru.otus.domain.Genre;
@@ -22,18 +22,24 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.*;
 
 @DisplayName("Класс BookServiceImpl ")
-@JdbcTest
-@Import({BookServiceImpl.class, BookDaoJdbc.class, AuthorDaoJdbc.class, GenreDaoJdbc.class})
+@SpringBootTest(classes = BookServiceImpl.class)
+@Import({BookServiceImpl.class})
 public class BookServiceImplTest {
 
     @Autowired
     private BookServiceImpl bookService;
 
     @MockBean
-    private BookDaoJdbc bookDaoJdbc;
+    private BookDao bookDaoJdbc;
+
+    @MockBean
+    private AuthorDao authorDaoJdbc;
+
+    @MockBean
+    private GenreDao genreDaoJdbc;
 
     @DisplayName("возвращает ожидаемую книгу по её id")
     @Test
@@ -75,8 +81,12 @@ public class BookServiceImplTest {
         Book expectedBook = new Book(1,"Test book", author, genre);
 
         given(bookDaoJdbc.insert(any())).willReturn(expectedBook);
+        given(authorDaoJdbc.getById(anyLong())).willReturn(Optional.of(author));
+        given(genreDaoJdbc.getById(anyLong())).willReturn(Optional.of(genre));
 
-        Book actualBook = bookService.insert(expectedBook);
+        Book actualBook = bookService.insert(
+                expectedBook.getTitle(), expectedBook.getAuthor().getId(), expectedBook.getGenre().getId());
+        verify(bookDaoJdbc, times(1)).insert(any());
         assertEquals(expectedBook, actualBook);
     }
 
@@ -89,8 +99,13 @@ public class BookServiceImplTest {
 
         ArgumentCaptor<Book> valueCapture = ArgumentCaptor.forClass(Book.class);
         doNothing().when(bookDaoJdbc).update(valueCapture.capture());
+        given(authorDaoJdbc.getById(anyLong())).willReturn(Optional.of(author));
+        given(genreDaoJdbc.getById(anyLong())).willReturn(Optional.of(genre));
 
-        bookService.update(expectedBook);
+        bookService.update(expectedBook.getId(), expectedBook.getTitle(),
+                expectedBook.getAuthor().getId(), expectedBook.getGenre().getId());
+
+        verify(bookDaoJdbc, times(1)).update(any());
         assertEquals(expectedBook, valueCapture.getValue());
     }
 
