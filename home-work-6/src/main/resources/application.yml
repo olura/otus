@@ -9,3 +9,13 @@ spring:
       mode: always
       data-locations: data.sql
       schema-locations: schema.sql
+  jpa:
+    generate-ddl: true
+    hibernate:
+      ddl-auto: create
+
+    properties:
+      hibernate:
+        format_sql: true
+
+    show-sql: true
