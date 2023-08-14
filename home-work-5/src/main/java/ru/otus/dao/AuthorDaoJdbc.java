@@ -9,7 +9,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.otus.domain.Author;
-import ru.otus.exception.AuthorNotFoundException;
+import ru.otus.exception.AuthorExistException;
 
 import java.util.List;
 import java.util.Map;
@@ -26,14 +26,14 @@ public class AuthorDaoJdbc implements AuthorDao {
 
     @Override
     public Optional<Author> getById(long id) {
-        return Optional.ofNullable(jdbcOperations.queryForObject("SELECT id, name FROM Author WHERE id =:id",
-                Map.of("id", id), new BeanPropertyRowMapper<>(Author.class)));
+        return jdbcOperations.query("SELECT id, name FROM Author WHERE id =:id", Map.of("id", id),
+                new BeanPropertyRowMapper<>(Author.class)).stream().findAny();
     }
 
     @Override
     public Optional<Author> getByName(String name) {
-        return Optional.ofNullable(jdbcOperations.queryForObject("SELECT id, name FROM Author WHERE name =:name",
-                Map.of("name", name), new BeanPropertyRowMapper<>(Author.class)));
+        return jdbcOperations.query("SELECT id, name FROM Author WHERE name =:name", Map.of("name", name),
+                new BeanPropertyRowMapper<>(Author.class)).stream().findAny();
     }
 
     @Override
@@ -42,17 +42,17 @@ public class AuthorDaoJdbc implements AuthorDao {
     }
 
     @Override
-    public Author insert(Author author) throws AuthorNotFoundException {
+    public Author insert(Author author) throws AuthorExistException {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         MapSqlParameterSource params = new MapSqlParameterSource();
 
         params.addValue("author_name", author.getName());
 
         try {
-            jdbcOperations.update("INSERT INTO Author (name) SELECT :author_name",
+            jdbcOperations.update("INSERT INTO Author (name) VALUES (:author_name)",
                     params, keyHolder, new String[]{"id"});
         } catch (DuplicateKeyException e) {
-            throw new AuthorNotFoundException("The author already exists");
+            throw new AuthorExistException("The author already exists");
         }
         author.setId(keyHolder.getKey().longValue());
 

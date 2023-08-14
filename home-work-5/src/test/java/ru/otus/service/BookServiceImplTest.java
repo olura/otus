@@ -13,6 +13,8 @@ import ru.otus.dao.GenreDao;
 import ru.otus.domain.Author;
 import ru.otus.domain.Book;
 import ru.otus.domain.Genre;
+import ru.otus.exception.AuthorNotFoundException;
+import ru.otus.exception.GenreNotFoundExeption;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,7 +77,7 @@ public class BookServiceImplTest {
 
     @DisplayName("добавляет книгу в БД")
     @Test
-    void shouldInsertBook() {
+    void shouldInsertBook() throws AuthorNotFoundException, GenreNotFoundExeption {
         Author author = new Author(1,"Test_author");
         Genre genre = new Genre(1, "Test_genre");
         Book expectedBook = new Book(1,"Test book", author, genre);
@@ -92,7 +94,7 @@ public class BookServiceImplTest {
 
     @DisplayName("обновляет книгу в БД")
     @Test
-    void shouldUpdateBook() {
+    void shouldUpdateBook() throws AuthorNotFoundException, GenreNotFoundExeption {
         Author author = new Author(1,"Test_author");
         Genre genre = new Genre(1, "Test_genre");
         Book expectedBook = new Book(1,"Test book", author, genre);

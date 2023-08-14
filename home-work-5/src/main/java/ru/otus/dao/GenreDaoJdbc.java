@@ -8,7 +8,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.otus.domain.Genre;
-import ru.otus.exception.GenreNotFoundExeption;
+import ru.otus.exception.GenreExistExeption;
 
 import java.util.List;
 import java.util.Map;
@@ -24,16 +24,14 @@ public class GenreDaoJdbc implements GenreDao {
 
     @Override
     public Optional<Genre> getById(long id) {
-        return Optional.ofNullable(jdbcOperations.queryForObject(
-                "SELECT id, title FROM Genre WHERE id =:id",
-                Map.of("id", id), new BeanPropertyRowMapper<>(Genre.class)));
+        return jdbcOperations.query("SELECT id, title FROM Genre WHERE id =:id", Map.of("id", id),
+                new BeanPropertyRowMapper<>(Genre.class)).stream().findAny();
     }
 
     @Override
     public Optional<Genre> getByTitle(String title) {
-        return Optional.ofNullable(jdbcOperations.queryForObject(
-                "SELECT id, title FROM Genre WHERE title =:title",
-                Map.of("title", title), new BeanPropertyRowMapper<>(Genre.class)));
+        return jdbcOperations.query("SELECT id, title FROM Genre WHERE title =:title",
+                Map.of("title", title), new BeanPropertyRowMapper<>(Genre.class)).stream().findAny();
     }
 
     @Override
@@ -42,17 +40,17 @@ public class GenreDaoJdbc implements GenreDao {
     }
 
     @Override
-    public Genre insert(Genre genre) throws GenreNotFoundExeption {
+    public Genre insert(Genre genre) throws GenreExistExeption {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         MapSqlParameterSource params = new MapSqlParameterSource();
 
         params.addValue("genre_title", genre.getTitle());
 
         try {
-            jdbcOperations.update("INSERT INTO Genre (title) SELECT :genre_title",
+            jdbcOperations.update("INSERT INTO Genre (title) VALUES (:genre_title)",
                     params, keyHolder, new String[]{"id"});
         } catch (DuplicateKeyException e) {
-            throw new GenreNotFoundExeption("The genre already exists");
+            throw new GenreExistExeption("The genre already exists");
         }
         genre.setId(keyHolder.getKey().longValue());
 

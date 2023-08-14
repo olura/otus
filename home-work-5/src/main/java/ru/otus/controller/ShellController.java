@@ -5,6 +5,8 @@ import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 import ru.otus.domain.Book;
+import ru.otus.exception.AuthorNotFoundException;
+import ru.otus.exception.GenreNotFoundExeption;
 import ru.otus.exception.NoFoundBookException;
 import ru.otus.service.BookService;
 
@@ -42,14 +44,22 @@ public class ShellController {
 
     @ShellMethod(key = {"i", "insert"}, value = "Insert book")
     public String insert(@ShellOption String title, @ShellOption int author_id, @ShellOption int genre_id) {
-        bookService.insert(title, author_id, genre_id);
+        try {
+            bookService.insert(title, author_id, genre_id);
+        } catch (AuthorNotFoundException | GenreNotFoundExeption e) {
+            return "Book does inserted. Error: " + e.getMessage();
+        }
         return "The book insert was successful";
     }
 
     @ShellMethod(key = {"u", "update"}, value = "Update book")
     public String update(@ShellOption long id, @ShellOption String title,
                          @ShellOption int author_id, @ShellOption int genre_id) {
-        bookService.update(id, title, author_id, genre_id);
+        try {
+            bookService.update(id, title, author_id, genre_id);
+        } catch (AuthorNotFoundException | GenreNotFoundExeption e) {
+             return "Book does update. Error: " + e.getMessage();
+        }
         return "The book update was successful";
     }
 

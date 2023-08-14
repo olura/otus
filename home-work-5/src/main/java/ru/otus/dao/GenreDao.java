@@ -1,9 +1,10 @@
 package ru.otus.dao;
 
+import ru.otus.domain.Genre;
+import ru.otus.exception.GenreExistExeption;
+
 import java.util.List;
 import java.util.Optional;
-import ru.otus.domain.Genre;
-import ru.otus.exception.GenreNotFoundExeption;
 
 public interface GenreDao {
     Optional<Genre> getById(long id);
@@ -12,5 +13,5 @@ public interface GenreDao {
 
     List<Genre> getAll();
 
-    Genre insert(Genre genre) throws GenreNotFoundExeption;
+    Genre insert(Genre genre) throws GenreExistExeption;
 }

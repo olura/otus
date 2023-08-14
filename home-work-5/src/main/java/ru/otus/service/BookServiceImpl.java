@@ -41,33 +41,23 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public Book insert(String title, long authorId, long genreId) {
-        Author author = null;
-        Genre genre = null;
-        try {
-            author = authorDao.getById(authorId)
+    public Book insert(String title, long authorId, long genreId)
+            throws AuthorNotFoundException, GenreNotFoundExeption {
+        Author author = authorDao.getById(authorId)
                     .orElseThrow(() -> new AuthorNotFoundException("This author does not exist"));
-            genre = genreDao.getById(genreId)
+        Genre genre = genreDao.getById(genreId)
                     .orElseThrow(() -> new GenreNotFoundExeption("This genre does not exist"));
-        } catch (AuthorNotFoundException | GenreNotFoundExeption e) {
-            System.out.println("Book does inserted. Error: " + e.getMessage());
-        }
         Book book = new Book(title, author, genre);
         return bookDao.insert(book);
     }
 
     @Override
-    public void update(long id, String title, long authorId, long genreId) {
-        Author author = null;
-        Genre genre = null;
-        try {
-            author = authorDao.getById(authorId)
+    public void update(long id, String title, long authorId, long genreId)
+            throws AuthorNotFoundException, GenreNotFoundExeption {
+        Author author = authorDao.getById(authorId)
                     .orElseThrow(() -> new AuthorNotFoundException("This author does not exist"));
-            genre = genreDao.getById(genreId)
+        Genre genre = genreDao.getById(genreId)
                     .orElseThrow(() -> new GenreNotFoundExeption("This genre does not exist"));
-        } catch (AuthorNotFoundException | GenreNotFoundExeption e) {
-            System.out.println("Book does update. Error: " + e.getMessage());
-        }
         Book book = new Book(id, title, author, genre);
         bookDao.update(book);
     }

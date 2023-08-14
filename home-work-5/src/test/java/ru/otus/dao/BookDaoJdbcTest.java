@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import ru.otus.domain.Author;
 import ru.otus.domain.Book;
@@ -11,22 +12,23 @@ import ru.otus.domain.Genre;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DisplayName("Класс BookDaoJdbc ")
 @JdbcTest
-@Import({BookDaoJdbc.class, AuthorDaoJdbc.class, GenreDaoJdbc.class})
+@Import(BookDaoJdbc.class)
 public class BookDaoJdbcTest {
 
     @Autowired
     private BookDao bookDao;
 
-    @Autowired
+    @MockBean
     private AuthorDao authorDao;
 
-    @Autowired
+    @MockBean
     private GenreDao genreDao;
 
     @DisplayName("возвращает ожидаемую книгу по её id")
@@ -35,8 +37,8 @@ public class BookDaoJdbcTest {
         Author author = new Author(1,"Pushkin");
         Genre genre = new Genre(1, "Romance");
         Book expectedBook = new Book(1,"Evgeniy Onegin", author, genre);
-        Book actualBook = bookDao.getById(expectedBook.getId()).get();
-        assertEquals(expectedBook, actualBook);
+        Optional<Book> actualBook = bookDao.getById(expectedBook.getId());
+        assertEquals(Optional.of(expectedBook), actualBook);
     }
 
     @DisplayName("возвращает ожидаемый список книг")
@@ -51,13 +53,13 @@ public class BookDaoJdbcTest {
     void shouldInsertBook() {
         int beforeSize =  bookDao.getAll().size();
 
-        Author author = authorDao.getById(1).get();
-        Genre genre = genreDao.getById(1).get();
+        Author author = new Author(1, "Pushkin");
+        Genre genre = new Genre(1, "Romance");
         Book expectedBook = new Book(1,"Test book", author, genre);
 
         Book book = bookDao.insert(expectedBook);
-        Book actualBook = bookDao.getById(book.getId()).get();
-        assertEquals(expectedBook, actualBook);
+        Optional<Book> actualBook = bookDao.getById(book.getId());
+        assertEquals(Optional.of(expectedBook), actualBook);
 
         int afterSize =  bookDao.getAll().size();
         assertEquals(beforeSize + 1, afterSize);
@@ -67,14 +69,13 @@ public class BookDaoJdbcTest {
     @Test
     void shouldUpdateBook() {
         int beforeSize =  bookDao.getAll().size();
-
-        Author author = authorDao.getById(1).get();
-        Genre genre = genreDao.getById(1).get();
+        Author author = new Author(1, "Pushkin");
+        Genre genre = new Genre(1, "Romance");
         Book expectedBook = new Book(1,"Test book", author, genre);
 
         bookDao.update(expectedBook);
-        Book actualBook = bookDao.getById(expectedBook.getId()).get();
-        assertEquals(expectedBook, actualBook);
+        Optional<Book> actualBook = bookDao.getById(expectedBook.getId());
+        assertEquals(Optional.of(expectedBook), actualBook);
 
         int afterSize =  bookDao.getAll().size();
         assertEquals(beforeSize, afterSize);
@@ -86,7 +87,7 @@ public class BookDaoJdbcTest {
         int beforeSize =  bookDao.getAll().size();
 
         bookDao.deleteById(1);
-        assertThrows(NoSuchElementException.class, () -> bookDao.getById(1).get());
+        assertThrows(NoSuchElementException.class, () -> bookDao.getById(1).orElseThrow());
 
         int afterSize =  bookDao.getAll().size();
         assertEquals(beforeSize - 1, afterSize);
