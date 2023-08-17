@@ -25,12 +25,6 @@ public class BookDaoJdbcTest {
     @Autowired
     private BookDao bookDao;
 
-    @MockBean
-    private AuthorDao authorDao;
-
-    @MockBean
-    private GenreDao genreDao;
-
     @DisplayName("возвращает ожидаемую книгу по её id")
     @Test
     void shouldReturnExpectedBookById() {

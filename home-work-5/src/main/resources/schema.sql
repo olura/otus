@@ -15,6 +15,6 @@ create table Genre (
 create table Book (
     id BIGSERIAL PRIMARY KEY,
     title varchar NOT NULL,
-    author_id int references Author(id) ON DELETE SET NULL,
-    genre_id int references Genre(id) ON DELETE SET NULL
+    author_id int references Author(id),
+    genre_id int references Genre(id)
 );

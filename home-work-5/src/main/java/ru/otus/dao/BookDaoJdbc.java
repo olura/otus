@@ -21,15 +21,9 @@ import java.util.Optional;
 public class BookDaoJdbc implements BookDao {
     private final NamedParameterJdbcOperations jdbcOperations;
 
-    private final AuthorDao authorDao;
-
-    private final GenreDao genreDao;
-
     @Autowired
-    public BookDaoJdbc(NamedParameterJdbcOperations jdbcOperations, AuthorDao authorDao, GenreDao genreDao) {
+    public BookDaoJdbc(NamedParameterJdbcOperations jdbcOperations) {
         this.jdbcOperations = jdbcOperations;
-        this.authorDao = authorDao;
-        this.genreDao = genreDao;
     }
 
     public Optional<Book> getById(long id) {

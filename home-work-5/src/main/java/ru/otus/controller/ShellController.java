@@ -47,7 +47,7 @@ public class ShellController {
         try {
             bookService.insert(title, author_id, genre_id);
         } catch (AuthorNotFoundException | GenreNotFoundExeption e) {
-            return "Book does inserted. Error: " + e.getMessage();
+            return "Book does not inserted. Error: " + e.getMessage();
         }
         return "The book insert was successful";
     }
@@ -58,7 +58,7 @@ public class ShellController {
         try {
             bookService.update(id, title, author_id, genre_id);
         } catch (AuthorNotFoundException | GenreNotFoundExeption e) {
-             return "Book does update. Error: " + e.getMessage();
+             return "Book does not update. Error: " + e.getMessage();
         }
         return "The book update was successful";
     }
