@@ -10,18 +10,18 @@ spring:
       data-locations: data.sql
       schema-locations: schema.sql
   jpa:
-    generate-ddl: true
-    hibernate:
-      ddl-auto: create
+#    generate-ddl: true
+#    hibernate:
+#      ddl-auto: create
 
-    properties:
-      hibernate:
-        format_sql: true
+#    properties:
+#      hibernate:
+#        format_sql: true
 
     show-sql: true
 
-#    sql:
-#      init:
-#        mode: always
-#        data-locations: data.sql
-#        schema-locations: schema.sql
+    sql:
+      init:
+        mode: always
+        data-locations: data.sql
+        schema-locations: schema.sql

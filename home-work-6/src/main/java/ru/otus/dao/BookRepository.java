@@ -5,11 +5,12 @@
 
 package ru.otus.dao;
 
-import java.util.List;
-import java.util.Optional;
 import ru.otus.domain.Book;
 
-public interface BookDao {
+import java.util.List;
+import java.util.Optional;
+
+public interface BookRepository {
     Optional<Book> getById(long id);
 
     List<Book> getAll();

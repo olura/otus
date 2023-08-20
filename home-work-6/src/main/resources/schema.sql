@@ -1,20 +1,27 @@
 drop table if exists Author CASCADE;
 drop table if exists Genre CASCADE;
 drop table if exists Book CASCADE;
+drop table if exists Comment CASCADE;
 
 create table Author (
-    id SERIAL PRIMARY KEY,
-    name varchar NOT NULL
+    id bigserial PRIMARY KEY,
+    name varchar NOT NULL unique
 );
 
 create table Genre (
-    id SERIAL PRIMARY KEY,
-    title varchar NOT NULL
+    id bigserial PRIMARY KEY,
+    title varchar NOT NULL unique
 );
 
 create table Book (
-    id SERIAL PRIMARY KEY,
+    id bigserial PRIMARY KEY,
     title varchar NOT NULL,
-    author_id int references Author(id) ON DELETE SET NULL,
-    genre_id int references Genre(id) ON DELETE SET NULL
+    author_id bigint references Author(id),
+    genre_id bigint references Genre(id)
 );
+
+create table Comment (
+    id bigserial PRIMARY KEY,
+    text varchar(255),
+    book_id bigint references Book(id) ON DELETE CASCADE
+)
