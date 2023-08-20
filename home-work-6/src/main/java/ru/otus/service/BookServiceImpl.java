@@ -31,7 +31,8 @@ public class BookServiceImpl implements BookService {
     @Autowired
     public BookServiceImpl(BookRepository bookRepository,
                            AuthorRepository authorRepository,
-                           GenreRepository genreRepository, CommentRepository commentRepository) {
+                           GenreRepository genreRepository,
+                           CommentRepository commentRepository) {
         this.bookRepository = bookRepository;
         this.authorRepository = authorRepository;
         this.genreRepository = genreRepository;
