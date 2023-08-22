@@ -10,8 +10,8 @@ import ru.otus.exception.AuthorNotFoundException;
 import ru.otus.exception.GenreNotFoundExeption;
 import ru.otus.exception.NoFoundBookException;
 import ru.otus.service.BookService;
+import ru.otus.service.ConverterService;
 
-import java.util.Formatter;
 import java.util.List;
 
 @ShellComponent
@@ -32,13 +32,14 @@ public class ShellController {
         } catch (NoFoundBookException e) {
             return e.getMessage();
         }
-        return convertListBooksToString(List.of(book));
+
+        return ConverterService.convertListBooksToString(bookService.getAllCommentToBook(book.getId()), book);
     }
 
     @ShellMethod(key = {"a", "all"}, value = "Show all book")
     public String getAllBook() {
         List<Book> books = bookService.getAll();
-        return convertListBooksToString(books);
+        return ConverterService.convertListBooksToString(bookService, books);
     }
 
     @ShellMethod(key = {"i", "insert"}, value = "Insert book")
@@ -91,37 +92,5 @@ public class ShellController {
             return "The comment does not delete. Error: " + e.getMessage();
         }
         return "The comment delete was successful";
-    }
-
-    private String convertListBooksToString(List<Book> books) {
-        final String ansiReset = "\u001B[0m";
-        final String ansiBold = "\u001B[1m";
-        final String ansiBlack = "\u001B[30m";
-        final String ansiUnderlined = "\u001B[4m";
-
-        StringBuilder sb = new StringBuilder();
-        Formatter formatter = new Formatter(sb);
-        formatter.format("|%s%s%-30s|%-20s|%-10s|%-50s%s|\n",
-                ansiUnderlined, ansiBold, "Title", "Author", "Genre", "Comments", ansiReset);
-
-        for (Book book: books) {
-            formatter.format("%s|%-30s|%-20s|%-10s|%-50s|%s\n",
-                    ansiBlack, book.getTitle(), book.getAuthor().getName(), book.getGenre().getTitle(),
-                    convertListCommentToString(book.getId()), ansiReset);
-        }
-        return sb.toString();
-    }
-
-    private String convertListCommentToString(long bookId) {
-
-        StringBuilder stringBuilder = new StringBuilder();
-
-        for (Comment comment: bookService.getAllCommentToBook(bookId)) {
-            stringBuilder.append(comment.getId());
-            stringBuilder.append(") '");
-            stringBuilder.append(comment.getText());
-            stringBuilder.append("' ");
-        }
-        return stringBuilder.toString();
     }
 }
