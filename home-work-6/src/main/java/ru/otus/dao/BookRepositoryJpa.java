@@ -1,13 +1,17 @@
 package ru.otus.dao;
 
+import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import org.springframework.stereotype.Repository;
 import ru.otus.domain.Book;
+import ru.otus.exception.NoFoundBookException;
 
 import java.util.List;
 import java.util.Optional;
+
+import static org.springframework.data.jpa.repository.EntityGraph.EntityGraphType.FETCH;
 
 @Repository
 public class BookRepositoryJpa implements BookRepository {
@@ -22,9 +26,13 @@ public class BookRepositoryJpa implements BookRepository {
 
     @Override
     public List<Book> getAll() {
-        TypedQuery<Book> query = entityManager.createQuery("from Book", Book.class);
+        EntityGraph<?> entityGraphAuthor = entityManager.getEntityGraph("author-entity-graph");
+        EntityGraph<?> entityGraphGenre = entityManager.getEntityGraph("genre-entity-graph");
+        TypedQuery<Book> query = entityManager.createQuery("select distinct b from Book b join fetch " +
+                "b.author join fetch b.genre", Book.class);
+        query.setHint(FETCH.getKey(), entityGraphAuthor);
+        query.setHint(FETCH.getKey(), entityGraphGenre);
         return query.getResultList();
-
     }
 
     @Override
@@ -42,7 +50,8 @@ public class BookRepositoryJpa implements BookRepository {
     }
 
     @Override
-    public void deleteById(long id) {
-        entityManager.remove(getById(id).orElseThrow());
+    public void deleteById(long id) throws NoFoundBookException {
+        entityManager.remove(getById(id).orElseThrow(
+                () -> new NoFoundBookException("The book with id " + id + " was not found")));
     }
 }

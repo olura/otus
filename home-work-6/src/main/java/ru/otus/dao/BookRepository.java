@@ -1,11 +1,7 @@
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by FernFlower decompiler)
-//
-
 package ru.otus.dao;
 
 import ru.otus.domain.Book;
+import ru.otus.exception.NoFoundBookException;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,5 +15,5 @@ public interface BookRepository {
 
     void update(Book book);
 
-    void deleteById(long id);
+    void deleteById(long id) throws NoFoundBookException;
 }

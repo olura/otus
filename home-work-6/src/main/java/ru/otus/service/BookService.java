@@ -4,13 +4,13 @@ import ru.otus.domain.Book;
 import ru.otus.domain.Comment;
 import ru.otus.exception.AuthorNotFoundException;
 import ru.otus.exception.GenreNotFoundExeption;
+import ru.otus.exception.NoFoundBookException;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface BookService {
 
-    Optional<Book> getById(long id);
+    Book getById(long id) throws NoFoundBookException;
 
     List<Book> getAll();
 
@@ -20,7 +20,11 @@ public interface BookService {
     void update(long id, String title, long authorId, long genreId)
             throws AuthorNotFoundException, GenreNotFoundExeption;
 
-    void deleteById(long id);
+    void deleteById(long id) throws NoFoundBookException;
 
-    List<Comment> getAllComment(long id);
+    List<Comment> getAllCommentToBook(long id);
+
+    Comment addComment(String text, long book_id) throws NoFoundBookException;
+
+    void deleteCommentById(long id) throws NoFoundBookException;
 }

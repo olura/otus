@@ -9,6 +9,7 @@ import ru.otus.domain.Author;
 import ru.otus.domain.Book;
 import ru.otus.domain.Comment;
 import ru.otus.domain.Genre;
+import ru.otus.exception.NoFoundBookException;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -82,7 +83,7 @@ public class CommentRepositoryJpaTest {
 
     @DisplayName("удаляет комментарий в БД по его id")
     @Test
-    void shouldDeleteComment() {
+    void shouldDeleteComment() throws NoFoundBookException {
         int beforeSize =  commentRepository.getAllCommentToBook(1).size();
 
         commentRepository.deleteById(1);

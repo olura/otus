@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Import;
 import ru.otus.domain.Author;
 import ru.otus.domain.Book;
 import ru.otus.domain.Genre;
+import ru.otus.exception.NoFoundBookException;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -44,6 +45,7 @@ public class BookRepositoryJpaTest {
     @Test
     void shouldReturnExpectedBookList() {
         List<Book> books = bookRepository.getAll();
+        System.out.println(books);
         assertEquals(2, books.size());
     }
 
@@ -82,7 +84,7 @@ public class BookRepositoryJpaTest {
 
     @DisplayName("удаляет книгу в БД по её id")
     @Test
-    void shouldDeleteBook() {
+    void shouldDeleteBook() throws NoFoundBookException {
         int beforeSize =  bookRepository.getAll().size();
 
         bookRepository.deleteById(1);

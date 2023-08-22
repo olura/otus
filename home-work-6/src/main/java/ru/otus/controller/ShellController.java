@@ -11,7 +11,6 @@ import ru.otus.exception.GenreNotFoundExeption;
 import ru.otus.exception.NoFoundBookException;
 import ru.otus.service.BookService;
 
-import java.util.Arrays;
 import java.util.Formatter;
 import java.util.List;
 
@@ -26,15 +25,14 @@ public class ShellController {
     }
 
     @ShellMethod(key = {"f", "find"}, value = "Find book by id")
-    public String getById (@ShellOption Long id) {
+    public String getById (@ShellOption long id) {
         Book book;
         try {
-            book = bookService.getById(id).orElseThrow(
-                    () -> new NoFoundBookException("The book was not found"));
+            book = bookService.getById(id);
         } catch (NoFoundBookException e) {
             return e.getMessage();
         }
-        return convertListBooksToString(Arrays.asList(book));
+        return convertListBooksToString(List.of(book));
     }
 
     @ShellMethod(key = {"a", "all"}, value = "Show all book")
@@ -44,30 +42,55 @@ public class ShellController {
     }
 
     @ShellMethod(key = {"i", "insert"}, value = "Insert book")
-    public String insert(@ShellOption String title, @ShellOption int author_id, @ShellOption int genre_id) {
+    public String insert(@ShellOption String title, @ShellOption long author_id, @ShellOption long genre_id) {
         try {
             bookService.insert(title, author_id, genre_id);
         } catch (AuthorNotFoundException | GenreNotFoundExeption e) {
-            return "Book does not inserted. Error: " + e.getMessage();
+            return "The book does not inserted. Error: " + e.getMessage();
         }
         return "The book insert was successful";
     }
 
     @ShellMethod(key = {"u", "update"}, value = "Update book")
     public String update(@ShellOption long id, @ShellOption String title,
-                         @ShellOption int author_id, @ShellOption int genre_id) {
+                         @ShellOption long author_id, @ShellOption long genre_id) {
         try {
             bookService.update(id, title, author_id, genre_id);
         } catch (AuthorNotFoundException | GenreNotFoundExeption e) {
-            return "Book does not update. Error: " + e.getMessage();
+            return "The book does not update. Error: " + e.getMessage();
         }
         return "The book update was successful";
     }
 
     @ShellMethod(key = {"d", "delete"}, value = "Delete book by id")
     public String deleteById(@ShellOption long id) {
-        bookService.deleteById(id);
+        try {
+            bookService.deleteById(id);
+        } catch (NoFoundBookException e) {
+            return "The book does not delete. Error: " + e.getMessage();
+        }
         return "The book delete was successful";
+    }
+
+    @ShellMethod(key = {"ac", "add comment"}, value = "Add comment")
+    public String addComment(@ShellOption String text, @ShellOption long book_id) {
+        Comment comment;
+        try {
+            comment = bookService.addComment(text, book_id);
+        } catch (NoFoundBookException e) {
+            return "Comment does not inserted. Error: " + e.getMessage();
+        }
+        return "The comment added was successful to book: " + comment.getBook().getTitle();
+    }
+
+    @ShellMethod(key = {"dc", "delete comment"}, value = "Delete comment by id")
+    public String deleteCommentById(@ShellOption long id) {
+        try {
+            bookService.deleteCommentById(id);
+        } catch (NoFoundBookException e) {
+            return "The comment does not delete. Error: " + e.getMessage();
+        }
+        return "The comment delete was successful";
     }
 
     private String convertListBooksToString(List<Book> books) {
@@ -93,8 +116,9 @@ public class ShellController {
 
         StringBuilder stringBuilder = new StringBuilder();
 
-        for (Comment comment: bookService.getAllComment(bookId)) {
-            stringBuilder.append("'");
+        for (Comment comment: bookService.getAllCommentToBook(bookId)) {
+            stringBuilder.append(comment.getId());
+            stringBuilder.append(") '");
             stringBuilder.append(comment.getText());
             stringBuilder.append("' ");
         }
