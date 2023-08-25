@@ -11,9 +11,7 @@ public interface CommentRepository {
 
     List<Comment> getAllCommentToBook(long id);
 
-    Comment insert(Comment comment);
-
-    void update(Comment comment);
+    Comment save(Comment comment);
 
     void deleteById(long id) throws NoFoundBookException;
 }

@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import ru.otus.domain.Author;
 import ru.otus.domain.Book;
@@ -11,11 +12,8 @@ import ru.otus.domain.Genre;
 import ru.otus.exception.NoFoundBookException;
 
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Класс BookRepositoryJpaTest ")
 @DataJpaTest
@@ -26,10 +24,7 @@ public class BookRepositoryJpaTest {
     private BookRepository bookRepository;
 
     @Autowired
-    private AuthorRepository authorRepository;
-
-    @Autowired
-    private GenreRepository genreRepository;
+    private TestEntityManager entityManager;
 
     @DisplayName("возвращает ожидаемую книгу по её id")
     @Test
@@ -37,8 +32,8 @@ public class BookRepositoryJpaTest {
         Author author = new Author(1,"Pushkin");
         Genre genre = new Genre(1, "Romance");
         Book expectedBook = new Book(1,"Evgeniy Onegin", author, genre);
-        Optional<Book> actualBook = bookRepository.getById(expectedBook.getId());
-        assertEquals(Optional.of(expectedBook), actualBook);
+        Book actualBook = bookRepository.getById(expectedBook.getId()).get();
+        assertEquals(expectedBook, actualBook);
     }
 
     @DisplayName("возвращает ожидаемый список книг")
@@ -54,29 +49,35 @@ public class BookRepositoryJpaTest {
     void shouldInsertBook() {
         int beforeSize =  bookRepository.getAll().size();
 
-        Author author = authorRepository.getById(1).get();
-        Genre genre = genreRepository.getById(1).get();
+        Author author = entityManager.find(Author.class, 1);
+        Genre genre = entityManager.find(Genre.class, 2);
         Book expectedBook = new Book("Test book", author, genre);
 
-        Book book = bookRepository.insert(expectedBook);
-        Optional<Book> actualBook = bookRepository.getById(book.getId());
-        assertEquals(Optional.of(expectedBook), actualBook);
+        Book book = bookRepository.save(expectedBook);
+        Book actualBook = entityManager.find(Book.class, book.getId());
+        assertEquals(expectedBook, actualBook);
 
         int afterSize =  bookRepository.getAll().size();
         assertEquals(beforeSize + 1, afterSize);
+
+
     }
 
     @DisplayName("обновляет книгу в БД")
     @Test
     void shouldUpdateBook() {
         int beforeSize =  bookRepository.getAll().size();
-        Author author = new Author(1,"Pushkin");
-        Genre genre = new Genre(1, "Romance");
-        Book expectedBook = new Book(1,"Test book", author, genre);
+        Author author = entityManager.find(Author.class, 2);
+        Genre genre = entityManager.find(Genre.class, 3);
+        Book expectedBook = entityManager.find(Book.class, 1);
+        expectedBook.setTitle("New title");
+        expectedBook.setAuthor(author);
+        expectedBook.setGenre(genre);
 
-        bookRepository.update(expectedBook);
-        Optional<Book> actualBook = bookRepository.getById(expectedBook.getId());
-        assertEquals(Optional.of(expectedBook), actualBook);
+        bookRepository.save(expectedBook);
+        Book actualBook = entityManager.find(Book.class, expectedBook.getId());
+        System.out.println(actualBook);
+        assertEquals(expectedBook, actualBook);
 
         int afterSize =  bookRepository.getAll().size();
         assertEquals(beforeSize, afterSize);
@@ -88,7 +89,7 @@ public class BookRepositoryJpaTest {
         int beforeSize =  bookRepository.getAll().size();
 
         bookRepository.deleteById(1);
-        assertThrows(NoSuchElementException.class, () -> bookRepository.getById(1).orElseThrow());
+        assertNull(entityManager.find(Book.class, 1));
 
         int afterSize =  bookRepository.getAll().size();
         assertEquals(beforeSize - 1, afterSize);

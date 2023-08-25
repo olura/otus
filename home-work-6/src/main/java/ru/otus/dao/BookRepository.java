@@ -11,9 +11,7 @@ public interface BookRepository {
 
     List<Book> getAll();
 
-    Book insert(Book book);
-
-    void update(Book book);
+    Book save(Book book);
 
     void deleteById(long id) throws NoFoundBookException;
 }

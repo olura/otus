@@ -6,7 +6,6 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import ru.otus.dao.AuthorRepository;
 import ru.otus.dao.BookRepository;
 import ru.otus.dao.CommentRepository;
@@ -31,7 +30,6 @@ import static org.mockito.Mockito.*;
 
 @DisplayName("Класс BookServiceImpl ")
 @SpringBootTest(classes = BookServiceImpl.class)
-@Import({BookServiceImpl.class})
 public class BookServiceImplTest {
 
     @Autowired
@@ -88,13 +86,13 @@ public class BookServiceImplTest {
         Genre genre = new Genre(1, "Test_genre");
         Book expectedBook = new Book(1,"Test book", author, genre);
 
-        given(bookRepository.insert(any())).willReturn(expectedBook);
+        given(bookRepository.save(any())).willReturn(expectedBook);
         given(authorRepository.getById(anyLong())).willReturn(Optional.of(author));
         given(genreRepository.getById(anyLong())).willReturn(Optional.of(genre));
 
         Book actualBook = bookService.insert(
                 expectedBook.getTitle(), expectedBook.getAuthor().getId(), expectedBook.getGenre().getId());
-        verify(bookRepository, times(1)).insert(any());
+        verify(bookRepository, times(1)).save(any());
         assertEquals(expectedBook, actualBook);
     }
 
@@ -105,16 +103,15 @@ public class BookServiceImplTest {
         Genre genre = new Genre(1, "Test_genre");
         Book expectedBook = new Book(1,"Test book", author, genre);
 
-        ArgumentCaptor<Book> valueCapture = ArgumentCaptor.forClass(Book.class);
-        doNothing().when(bookRepository).update(valueCapture.capture());
+        given(bookRepository.save(any())).willReturn(expectedBook);
         given(authorRepository.getById(anyLong())).willReturn(Optional.of(author));
         given(genreRepository.getById(anyLong())).willReturn(Optional.of(genre));
 
-        bookService.update(expectedBook.getId(), expectedBook.getTitle(),
+        Book actualBook = bookService.update(expectedBook.getId(), expectedBook.getTitle(),
                 expectedBook.getAuthor().getId(), expectedBook.getGenre().getId());
 
-        verify(bookRepository, times(1)).update(any());
-        assertEquals(expectedBook, valueCapture.getValue());
+        verify(bookRepository, times(1)).save(any());
+        assertEquals(expectedBook, actualBook);
     }
 
     @DisplayName("удаляет книгу в БД по её id")
@@ -159,11 +156,11 @@ public class BookServiceImplTest {
         Book book = new Book(1,"Test book", author, genre);
         Comment expectedComment = new Comment("first comment", book);
 
-        given(commentRepository.insert(any())).willReturn(expectedComment);
+        given(commentRepository.save(any())).willReturn(expectedComment);
         given(bookRepository.getById(anyLong())).willReturn(Optional.of(book));
 
         Comment actualComment = bookService.addComment(expectedComment.getText(), expectedComment.getBook().getId());
-        verify(commentRepository, times(1)).insert(any());
+        verify(commentRepository, times(1)).save(any());
         assertEquals(expectedComment, actualComment);
     }
 

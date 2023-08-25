@@ -4,9 +4,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import ru.otus.domain.Genre;
-import ru.otus.exception.GenreExistExeption;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +20,9 @@ public class GenreRepositoryJpaTest {
 
     @Autowired
     private GenreRepository genreRepository;
+
+    @Autowired
+    private TestEntityManager entityManager;
 
     @DisplayName("возвращает ожидаемый жанр по его id")
     @Test
@@ -36,17 +39,22 @@ public class GenreRepositoryJpaTest {
         assertEquals(3, genres.size());
     }
 
-    @DisplayName("добавляет жанр в БД")
+    @DisplayName("сохраняет жанр в БД")
     @Test
-    void shouldInsertGenre() throws GenreExistExeption {
+    void shouldInsertGenre() {
         int beforeSize = genreRepository.getAll().size();
-
         Genre expectedGenre = new Genre("Test_genre");
-        Genre genre = genreRepository.insert(expectedGenre);
-        Optional<Genre> actualGenre = genreRepository.getById(genre.getId());
-        assertEquals(Optional.of(expectedGenre), actualGenre);
-
+        Genre genre = genreRepository.save(expectedGenre);
+        Genre actualGenre = entityManager.find(Genre.class, genre.getId());
+        assertEquals(expectedGenre, actualGenre);
         int afterSize =  genreRepository.getAll().size();
         assertEquals(beforeSize + 1, afterSize);
+
+        expectedGenre.setTitle("New genre");
+        Genre genre1 = genreRepository.save(expectedGenre);
+        Genre actualGenre1 = entityManager.find(Genre.class, genre1.getId());
+        assertEquals(expectedGenre, actualGenre);
+        int afterInsertDuplicateSize =  genreRepository.getAll().size();
+        assertEquals(afterSize, afterInsertDuplicateSize);
     }
 }

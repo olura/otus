@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import ru.otus.domain.Author;
 import ru.otus.domain.Book;
@@ -12,11 +13,8 @@ import ru.otus.domain.Genre;
 import ru.otus.exception.NoFoundBookException;
 
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Класс CommentRepositoryJpaTest ")
 @DataJpaTest
@@ -27,7 +25,7 @@ public class CommentRepositoryJpaTest {
     private CommentRepository commentRepository;
 
     @Autowired
-    private BookRepository bookRepository;
+    private TestEntityManager entityManager;
 
     @DisplayName("возвращает ожидаемую комментарий по его id")
     @Test
@@ -36,8 +34,8 @@ public class CommentRepositoryJpaTest {
         Genre genre = new Genre(1, "Romance");
         Book book = new Book(1,"Evgeniy Onegin", author, genre);
         Comment expectedComment = new Comment(1, "first comment", book);
-        Optional<Comment> actualComment = commentRepository.getById(expectedComment.getId());
-        assertEquals(Optional.of(expectedComment), actualComment);
+        Comment actualComment = commentRepository.getById(expectedComment.getId()).get();
+        assertEquals(expectedComment.getId(), actualComment.getId());
     }
 
     @DisplayName("возвращает ожидаемый список комментариев")
@@ -54,12 +52,12 @@ public class CommentRepositoryJpaTest {
     void shouldInsertComment() {
         int beforeSize =  commentRepository.getAllCommentToBook(1).size();
 
-        Book book = bookRepository.getById(1).get();
+        Book book = entityManager.find(Book.class, 1);
         Comment expectedComment = new Comment("first comment", book);
 
-        Comment comment = commentRepository.insert(expectedComment);
-        Optional<Comment> actualComment = commentRepository.getById(comment.getId());
-        assertEquals(Optional.of(expectedComment), actualComment);
+        Comment comment = commentRepository.save(expectedComment);
+        Comment actualComment = entityManager.find(Comment.class, comment.getId());
+        assertEquals(expectedComment, actualComment);
 
         int afterSize =  commentRepository.getAllCommentToBook(1).size();
         assertEquals(beforeSize + 1, afterSize);
@@ -70,12 +68,12 @@ public class CommentRepositoryJpaTest {
     void shouldUpdateComment() {
         int beforeSize =  commentRepository.getAllCommentToBook(1).size();
 
-        Book book = bookRepository.getById(1).get();
+        Book book = entityManager.find(Book.class, 1);
         Comment expectedComment = new Comment(1, "new comment", book);
 
-        commentRepository.update(expectedComment);
-        Optional<Comment> actualComment = commentRepository.getById(expectedComment.getId());
-        assertEquals(Optional.of(expectedComment), actualComment);
+        commentRepository.save(expectedComment);
+        Comment actualComment = entityManager.find(Comment.class, expectedComment.getId());
+        assertEquals(expectedComment, actualComment);
 
         int afterSize =  commentRepository.getAllCommentToBook(1).size();
         assertEquals(beforeSize, afterSize);
@@ -88,7 +86,7 @@ public class CommentRepositoryJpaTest {
 
         commentRepository.deleteById(1);
 
-        assertThrows(NoSuchElementException.class, () -> commentRepository.getById(1).orElseThrow());
+        assertNull(entityManager.find(Comment.class, 1));
 
         int afterSize =  commentRepository.getAllCommentToBook(1).size();
         assertEquals(beforeSize - 1, afterSize);

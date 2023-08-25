@@ -61,19 +61,19 @@ public class BookServiceImpl implements BookService {
         Genre genre = genreRepository.getById(genreId)
                 .orElseThrow(() -> new GenreNotFoundExeption("This genre does not exist"));
         Book book = new Book(title, author, genre);
-        return bookRepository.insert(book);
+        return bookRepository.save(book);
     }
 
     @Override
     @Transactional
-    public void update(long id, String title, long authorId, long genreId)
+    public Book update(long id, String title, long authorId, long genreId)
             throws AuthorNotFoundException, GenreNotFoundExeption {
         Author author = authorRepository.getById(authorId)
                 .orElseThrow(() -> new AuthorNotFoundException("This author does not exist"));
         Genre genre = genreRepository.getById(genreId)
                 .orElseThrow(() -> new GenreNotFoundExeption("This genre does not exist"));
         Book book = new Book(id, title, author, genre);
-        bookRepository.update(book);
+        return bookRepository.save(book);
     }
 
     @Override
@@ -92,7 +92,7 @@ public class BookServiceImpl implements BookService {
     @Transactional
     public Comment addComment(String text, long book_id) throws NoFoundBookException {
         Book book = getById(book_id);
-        return commentRepository.insert(new Comment(text, book));
+        return commentRepository.save(new Comment(text, book));
     }
 
     @Override

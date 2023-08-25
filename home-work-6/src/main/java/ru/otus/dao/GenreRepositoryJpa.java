@@ -3,10 +3,8 @@ package ru.otus.dao;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
-import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.stereotype.Repository;
 import ru.otus.domain.Genre;
-import ru.otus.exception.GenreExistExeption;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,7 +13,11 @@ import java.util.Optional;
 public class GenreRepositoryJpa implements GenreRepository {
 
     @PersistenceContext
-    private EntityManager entityManager;
+    private final EntityManager entityManager;
+
+    public GenreRepositoryJpa(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
 
     @Override
     public Optional<Genre> getById(long id) {
@@ -29,15 +31,10 @@ public class GenreRepositoryJpa implements GenreRepository {
     }
 
     @Override
-    public Genre insert(Genre genre) throws GenreExistExeption {
+    public Genre save(Genre genre) {
         if (genre.getId() == 0) {
-            try {
-                entityManager.persist(genre);
-                return genre;
-            } catch (ConstraintViolationException e) {
-                entityManager.clear();
-                throw new GenreExistExeption("The author already exists");
-            }
+            entityManager.persist(genre);
+            return genre;
         }
         return entityManager.merge(genre);
     }

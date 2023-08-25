@@ -17,7 +17,7 @@ public interface BookService {
     Book insert(String title, long authorId, long genreId)
             throws AuthorNotFoundException, GenreNotFoundExeption;
 
-    void update(long id, String title, long authorId, long genreId)
+    Book update(long id, String title, long authorId, long genreId)
             throws AuthorNotFoundException, GenreNotFoundExeption;
 
     void deleteById(long id) throws NoFoundBookException;

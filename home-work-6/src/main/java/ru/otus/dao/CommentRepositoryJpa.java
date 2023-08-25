@@ -14,7 +14,11 @@ import java.util.Optional;
 public class CommentRepositoryJpa implements CommentRepository {
 
     @PersistenceContext
-    private EntityManager entityManager;
+    private final EntityManager entityManager;
+
+    public CommentRepositoryJpa(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
 
     @Override
     public Optional<Comment> getById(long id) {
@@ -30,17 +34,12 @@ public class CommentRepositoryJpa implements CommentRepository {
     }
 
     @Override
-    public Comment insert(Comment comment) {
+    public Comment save(Comment comment) {
         if (comment.getId() == 0) {
             entityManager.persist(comment);
             return comment;
         }
         return entityManager.merge(comment);
-    }
-
-    @Override
-    public void update(Comment comment) {
-        entityManager.merge(comment);
     }
 
     @Override
