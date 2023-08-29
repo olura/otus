@@ -19,9 +19,12 @@ public class ShellController {
 
     private final BookService bookService;
 
+    private final ConverterService converterService;
+
     @Autowired
-    public ShellController(BookService bookService) {
+    public ShellController(BookService bookService, ConverterService converterService) {
         this.bookService = bookService;
+        this.converterService = converterService;
     }
 
     @ShellMethod(key = {"f", "find"}, value = "Find book by id")
@@ -33,13 +36,13 @@ public class ShellController {
             return e.getMessage();
         }
 
-        return ConverterService.convertListBooksToString(bookService.getAllCommentToBook(book.getId()), book);
+        return converterService.convertListBooksToString(List.of(book));
     }
 
     @ShellMethod(key = {"a", "all"}, value = "Show all book")
     public String getAllBook() {
         List<Book> books = bookService.getAll();
-        return ConverterService.convertListBooksToString(bookService, books);
+        return converterService.convertListBooksToString(books);
     }
 
     @ShellMethod(key = {"i", "insert"}, value = "Insert book")
@@ -82,6 +85,15 @@ public class ShellController {
             return "Comment does not inserted. Error: " + e.getMessage();
         }
         return "The comment added was successful to book: " + comment.getBook().getTitle();
+    }
+
+    @ShellMethod(key = {"gc", "get comments"}, value = "Get comments")
+    public String addComment(@ShellOption long book_id) {
+        List<Comment> comment = bookService.getAllCommentToBook(book_id);
+        if (comment.isEmpty()) {
+            return "No comments found";
+        }
+        return converterService.convertListCommentToString(comment);
     }
 
     @ShellMethod(key = {"dc", "delete comment"}, value = "Delete comment by id")

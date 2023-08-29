@@ -1,5 +1,6 @@
 package ru.otus.dao;
 
+import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -8,7 +9,10 @@ import ru.otus.domain.Book;
 import ru.otus.exception.NoFoundBookException;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+
+import static org.springframework.data.jpa.repository.EntityGraph.EntityGraphType.FETCH;
 
 @Repository
 public class BookRepositoryJpa implements BookRepository {
@@ -22,10 +26,9 @@ public class BookRepositoryJpa implements BookRepository {
 
     @Override
     public Optional<Book> getById(long id) {
-        TypedQuery<Book> query = entityManager.createQuery("select b from Book b left join fetch " +
-                "b.author left join fetch b.genre where b.id=:id", Book.class);
-        query.setParameter("id", id);
-        return query.getResultStream().findAny();
+        EntityGraph<?> entityGraph = entityManager.getEntityGraph("book-graph");
+        Map<String, Object> properties = Map.of(FETCH.getKey(), entityGraph);
+        return Optional.ofNullable(entityManager.find(Book.class, id, properties));
     }
 
     @Override
