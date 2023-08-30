@@ -23,7 +23,6 @@ import java.util.Objects;
 @Getter
 @Entity
 @Table(name = "book")
-@NamedEntityGraph(name = "book-graph", attributeNodes = {@NamedAttributeNode("author"), @NamedAttributeNode("genre")})
 public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

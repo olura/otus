@@ -16,7 +16,7 @@ import ru.otus.domain.Comment;
 import ru.otus.domain.Genre;
 import ru.otus.exception.AuthorNotFoundException;
 import ru.otus.exception.GenreNotFoundExeption;
-import ru.otus.exception.NoFoundBookException;
+import ru.otus.exception.BookNotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,12 +49,12 @@ public class BookServiceImplTest {
 
     @DisplayName("возвращает ожидаемую книгу по её id")
     @Test
-    void shouldReturnExpectedBookById() throws NoFoundBookException {
+    void shouldReturnExpectedBookById() throws BookNotFoundException {
         Author author = new Author(1,"Pushkin");
         Genre genre = new Genre(1, "Romance");
         Book expectedBook = new Book(1,"Evgeniy Onegin", author, genre);
 
-        given(bookRepository.getById(anyLong())).willReturn((Optional.of(expectedBook)));
+        given(bookRepository.findById(anyLong())).willReturn((Optional.of(expectedBook)));
 
         Book actualBook = bookService.getById(expectedBook.getId());
         assertEquals(expectedBook, actualBook);
@@ -73,7 +73,7 @@ public class BookServiceImplTest {
         expectedBooks.add(new Book(1,"Evgeniy Onegin", author1, genre1));
         expectedBooks.add(new Book(2,"Test book", author2, genre2));
 
-        given(bookRepository.getAll()).willReturn(expectedBooks);
+        given(bookRepository.findAll()).willReturn(expectedBooks);
 
         List<Book> actualBooks = bookService.getAll();
         assertEquals(expectedBooks, actualBooks);
@@ -87,8 +87,8 @@ public class BookServiceImplTest {
         Book expectedBook = new Book(1,"Test book", author, genre);
 
         given(bookRepository.save(any())).willReturn(expectedBook);
-        given(authorRepository.getById(anyLong())).willReturn(Optional.of(author));
-        given(genreRepository.getById(anyLong())).willReturn(Optional.of(genre));
+        given(authorRepository.findById(anyLong())).willReturn(Optional.of(author));
+        given(genreRepository.findById(anyLong())).willReturn(Optional.of(genre));
 
         Book actualBook = bookService.insert(
                 expectedBook.getTitle(), expectedBook.getAuthor().getId(), expectedBook.getGenre().getId());
@@ -104,8 +104,8 @@ public class BookServiceImplTest {
         Book expectedBook = new Book(1,"Test book", author, genre);
 
         given(bookRepository.save(any())).willReturn(expectedBook);
-        given(authorRepository.getById(anyLong())).willReturn(Optional.of(author));
-        given(genreRepository.getById(anyLong())).willReturn(Optional.of(genre));
+        given(authorRepository.findById(anyLong())).willReturn(Optional.of(author));
+        given(genreRepository.findById(anyLong())).willReturn(Optional.of(genre));
 
         Book actualBook = bookService.update(expectedBook.getId(), expectedBook.getTitle(),
                 expectedBook.getAuthor().getId(), expectedBook.getGenre().getId());
@@ -116,7 +116,7 @@ public class BookServiceImplTest {
 
     @DisplayName("удаляет книгу в БД по её id")
     @Test
-    void shouldDeleteBook() throws NoFoundBookException {
+    void shouldDeleteBook() {
 
         long id = 1;
 
@@ -142,7 +142,7 @@ public class BookServiceImplTest {
         expectedComment.add(new Comment("first comment", book1));
         expectedComment.add(new Comment("second comment", book2));
 
-        given(commentRepository.getAllCommentToBook(anyLong())).willReturn(expectedComment);
+        given(commentRepository.findByBook_id(anyLong())).willReturn(expectedComment);
 
         List<Comment> actualComment = bookService.getAllCommentToBook(1);
         assertEquals(expectedComment, actualComment);
@@ -150,14 +150,14 @@ public class BookServiceImplTest {
 
     @DisplayName("добавляет комментарий к книге")
     @Test
-    void shouldInsertCommentToBookById() throws NoFoundBookException {
+    void shouldInsertCommentToBookById() throws BookNotFoundException {
         Author author = new Author(1,"Test_author");
         Genre genre = new Genre(1, "Test_genre");
         Book book = new Book(1,"Test book", author, genre);
         Comment expectedComment = new Comment("first comment", book);
 
         given(commentRepository.save(any())).willReturn(expectedComment);
-        given(bookRepository.getById(anyLong())).willReturn(Optional.of(book));
+        given(bookRepository.findById(anyLong())).willReturn(Optional.of(book));
 
         Comment actualComment = bookService.addComment(expectedComment.getText(), expectedComment.getBook().getId());
         verify(commentRepository, times(1)).save(any());
@@ -166,7 +166,7 @@ public class BookServiceImplTest {
 
     @DisplayName("удаляет комментарий в БД по его id")
     @Test
-    void shouldDeleteComment() throws NoFoundBookException {
+    void shouldDeleteComment() {
 
         long id = 1;
 

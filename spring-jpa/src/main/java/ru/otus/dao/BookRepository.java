@@ -1,17 +1,19 @@
 package ru.otus.dao;
 
+import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.JpaRepository;
 import ru.otus.domain.Book;
-import ru.otus.exception.NoFoundBookException;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface BookRepository {
-    Optional<Book> getById(long id);
+public interface BookRepository extends JpaRepository<Book, Long> {
 
-    List<Book> getAll();
+    @Override
+    @EntityGraph(attributePaths = {"author", "genre"})
+    Optional<Book> findById(Long id);
 
-    Book save(Book book);
-
-    void deleteById(long id) throws NoFoundBookException;
+    @Override
+    @EntityGraph(attributePaths = {"author", "genre"})
+    List<Book> findAll();
 }

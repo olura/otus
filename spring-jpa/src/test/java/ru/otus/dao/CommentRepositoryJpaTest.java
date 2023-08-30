@@ -5,12 +5,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.context.annotation.Import;
 import ru.otus.domain.Author;
 import ru.otus.domain.Book;
 import ru.otus.domain.Comment;
 import ru.otus.domain.Genre;
-import ru.otus.exception.NoFoundBookException;
+import ru.otus.exception.BookNotFoundException;
 
 import java.util.List;
 
@@ -18,7 +17,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Класс CommentRepositoryJpaTest ")
 @DataJpaTest
-@Import({CommentRepositoryJpa.class, BookRepositoryJpa.class})
 public class CommentRepositoryJpaTest {
 
     @Autowired
@@ -34,23 +32,23 @@ public class CommentRepositoryJpaTest {
         Genre genre = new Genre(1, "Romance");
         Book book = new Book(1,"Evgeniy Onegin", author, genre);
         Comment expectedComment = new Comment(1, "first comment", book);
-        Comment actualComment = commentRepository.getById(expectedComment.getId()).get();
+        Comment actualComment = commentRepository.findById(expectedComment.getId()).get();
         assertEquals(expectedComment.getId(), actualComment.getId());
     }
 
     @DisplayName("возвращает ожидаемый список комментариев")
     @Test
     void shouldReturnExpectedCommentList() {
-        List<Comment> comments = commentRepository.getAllCommentToBook(1);
+        List<Comment> comments = commentRepository.findByBook_id(1L);
         assertEquals(2, comments.size());
-        List<Comment> comments2 = commentRepository.getAllCommentToBook(2);
+        List<Comment> comments2 = commentRepository.findByBook_id(2L);
         assertEquals(0, comments2.size());
     }
 
     @DisplayName("добавляет комментарий в БД")
     @Test
     void shouldInsertComment() {
-        int beforeSize =  commentRepository.getAllCommentToBook(1).size();
+        int beforeSize = commentRepository.findByBook_id(1L).size();
 
         Book book = entityManager.find(Book.class, 1);
         Comment expectedComment = new Comment("first comment", book);
@@ -59,14 +57,14 @@ public class CommentRepositoryJpaTest {
         Comment actualComment = entityManager.find(Comment.class, comment.getId());
         assertEquals(expectedComment, actualComment);
 
-        int afterSize =  commentRepository.getAllCommentToBook(1).size();
+        int afterSize =  commentRepository.findByBook_id(1L).size();
         assertEquals(beforeSize + 1, afterSize);
     }
 
     @DisplayName("обновляет комментарий в БД")
     @Test
     void shouldUpdateComment() {
-        int beforeSize =  commentRepository.getAllCommentToBook(1).size();
+        int beforeSize =  commentRepository.findByBook_id(1L).size();
 
         Book book = entityManager.find(Book.class, 1);
         Comment expectedComment = new Comment(1, "new comment", book);
@@ -75,20 +73,20 @@ public class CommentRepositoryJpaTest {
         Comment actualComment = entityManager.find(Comment.class, expectedComment.getId());
         assertEquals(expectedComment, actualComment);
 
-        int afterSize =  commentRepository.getAllCommentToBook(1).size();
+        int afterSize =  commentRepository.findByBook_id(1L).size();
         assertEquals(beforeSize, afterSize);
     }
 
     @DisplayName("удаляет комментарий в БД по его id")
     @Test
-    void shouldDeleteComment() throws NoFoundBookException {
-        int beforeSize =  commentRepository.getAllCommentToBook(1).size();
+    void shouldDeleteComment() {
+        int beforeSize =  commentRepository.findByBook_id(1L).size();
 
-        commentRepository.deleteById(1);
+        commentRepository.deleteById(1L);
 
         assertNull(entityManager.find(Comment.class, 1));
 
-        int afterSize =  commentRepository.getAllCommentToBook(1).size();
+        int afterSize =  commentRepository.findByBook_id(1L).size();
         assertEquals(beforeSize - 1, afterSize);
     }
 }
