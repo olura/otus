@@ -15,6 +15,7 @@ import ru.otus.domain.Book;
 import ru.otus.domain.Genre;
 import ru.otus.exception.AuthorNotFoundException;
 import ru.otus.exception.GenreNotFoundExeption;
+import ru.otus.exception.BookNotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -94,7 +95,10 @@ public class BookServiceImplTest {
 
     @DisplayName("обновляет книгу в БД")
     @Test
-    void shouldUpdateBook() throws AuthorNotFoundException, GenreNotFoundExeption {
+    void shouldUpdateBook() throws AuthorNotFoundException, GenreNotFoundExeption, BookNotFoundException {
+        Author oldButhor = new Author(1,"Old_author");
+        Genre oldGenre = new Genre(1, "Old_genre");
+        Book oldBook = new Book(1,"Old book", oldButhor, oldGenre);
         Author author = new Author(1,"Test_author");
         Genre genre = new Genre(1, "Test_genre");
         Book expectedBook = new Book(1,"Test book", author, genre);
@@ -103,6 +107,7 @@ public class BookServiceImplTest {
         doNothing().when(bookDaoJdbc).update(valueCapture.capture());
         given(authorDaoJdbc.getById(anyLong())).willReturn(Optional.of(author));
         given(genreDaoJdbc.getById(anyLong())).willReturn(Optional.of(genre));
+        given(bookDaoJdbc.getById(anyLong())).willReturn(Optional.of(oldBook));
 
         bookService.update(expectedBook.getId(), expectedBook.getTitle(),
                 expectedBook.getAuthor().getId(), expectedBook.getGenre().getId());

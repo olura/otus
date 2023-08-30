@@ -7,11 +7,11 @@ import org.springframework.shell.standard.ShellOption;
 import ru.otus.domain.Book;
 import ru.otus.exception.AuthorNotFoundException;
 import ru.otus.exception.GenreNotFoundExeption;
-import ru.otus.exception.NoFoundBookException;
+import ru.otus.exception.BookNotFoundException;
 import ru.otus.service.BookService;
+import ru.otus.service.ConverterService;
 
 import java.util.Arrays;
-import java.util.Formatter;
 import java.util.List;
 
 @ShellComponent
@@ -19,9 +19,12 @@ public class ShellController {
 
     private final BookService bookService;
 
+    private final ConverterService converterService;
+
     @Autowired
-    public ShellController(BookService bookService) {
+    public ShellController(BookService bookService, ConverterService converterService) {
         this.bookService = bookService;
+        this.converterService = converterService;
     }
 
     @ShellMethod(key = {"f", "find"}, value = "Find book by id")
@@ -29,17 +32,17 @@ public class ShellController {
         Book book;
         try {
             book = bookService.getById(id).orElseThrow(
-                    () -> new NoFoundBookException("The book was not found"));
-        } catch (NoFoundBookException e) {
+                    () -> new BookNotFoundException("The book was not found"));
+        } catch (BookNotFoundException e) {
             return e.getMessage();
         }
-        return convertListBooksToString(Arrays.asList(book));
+        return converterService.convertListBooksToString(Arrays.asList(book));
     }
 
     @ShellMethod(key = {"a", "all"}, value = "Show all book")
     public String getAllBook() {
         List<Book> books = bookService.getAll();
-        return convertListBooksToString(books);
+        return converterService.convertListBooksToString(books);
     }
 
     @ShellMethod(key = {"i", "insert"}, value = "Insert book")
@@ -57,7 +60,7 @@ public class ShellController {
                          @ShellOption int author_id, @ShellOption int genre_id) {
         try {
             bookService.update(id, title, author_id, genre_id);
-        } catch (AuthorNotFoundException | GenreNotFoundExeption e) {
+        } catch (AuthorNotFoundException | GenreNotFoundExeption | BookNotFoundException e) {
              return "Book does not update. Error: " + e.getMessage();
         }
         return "The book update was successful";
@@ -67,23 +70,5 @@ public class ShellController {
     public String deleteById(@ShellOption long id) {
         bookService.deleteById(id);
         return "The book delete was successful";
-    }
-
-    private String convertListBooksToString(List<Book> books) {
-        final String ansiReset = "\u001B[0m";
-        final String ansiBold = "\u001B[1m";
-        final String ansiBlack = "\u001B[30m";
-        final String ansiUnderlined = "\u001B[4m";
-
-        StringBuilder sb = new StringBuilder();
-        Formatter formatter = new Formatter(sb);
-        formatter.format("|%s%s%-30s|%-20s|%-10s%s|\n",
-                ansiUnderlined, ansiBold, "Title", "Author", "Genre", ansiReset);
-
-        for (Book book: books) {
-            formatter.format("%s|%-30s|%-20s|%-10s|%s\n",
-                    ansiBlack, book.getTitle(), book.getAuthor().getName(), book.getGenre().getTitle(), ansiReset);
-        }
-        return sb.toString();
     }
 }

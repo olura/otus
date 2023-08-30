@@ -2,6 +2,7 @@ package ru.otus.service;
 
 import ru.otus.domain.Book;
 import ru.otus.exception.AuthorNotFoundException;
+import ru.otus.exception.BookNotFoundException;
 import ru.otus.exception.GenreNotFoundExeption;
 
 import java.util.List;
@@ -17,7 +18,7 @@ public interface BookService {
             throws AuthorNotFoundException, GenreNotFoundExeption;
 
     void update(long id, String title, long authorId, long genreId)
-            throws AuthorNotFoundException, GenreNotFoundExeption;
+            throws AuthorNotFoundException, GenreNotFoundExeption, BookNotFoundException;
 
     void deleteById(long id);
 }

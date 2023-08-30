@@ -7,7 +7,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import ru.otus.domain.Genre;
 import ru.otus.exception.GenreExistExeption;
-import ru.otus.exception.GenreNotFoundExeption;
 
 import java.util.List;
 import java.util.Optional;

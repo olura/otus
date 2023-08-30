@@ -9,6 +9,7 @@ import ru.otus.domain.Author;
 import ru.otus.domain.Book;
 import ru.otus.domain.Genre;
 import ru.otus.exception.AuthorNotFoundException;
+import ru.otus.exception.BookNotFoundException;
 import ru.otus.exception.GenreNotFoundExeption;
 
 import java.util.List;
@@ -53,7 +54,8 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public void update(long id, String title, long authorId, long genreId)
-            throws AuthorNotFoundException, GenreNotFoundExeption {
+            throws AuthorNotFoundException, GenreNotFoundExeption, BookNotFoundException {
+        bookDao.getById(id).orElseThrow(() -> new BookNotFoundException("This book does not exist"));
         Author author = authorDao.getById(authorId)
                     .orElseThrow(() -> new AuthorNotFoundException("This author does not exist"));
         Genre genre = genreDao.getById(genreId)
