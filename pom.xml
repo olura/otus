@@ -16,21 +16,20 @@
 
 	<packaging>pom</packaging>
 
-    <properties>
-        <checkstyle-plugin.version>3.1.2</checkstyle-plugin.version>
-        <checkstyle.version>10.9.1</checkstyle.version>
-        <checkstyle.config.url>https://raw.githubusercontent.com/OtusTeam/Spring/master/checkstyle.xml</checkstyle.config.url>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-    </properties>
-
 	<modules>
 		<module>home-work-1</module>
 		<module>home-work-2</module>
 		<module>home-work-3</module>
-		<module>home-work-4</module>
-<!--		<module>home-work-5</module>-->
+		<module>spring-jdbc</module>
 	</modules>
+
+	<properties>
+		<checkstyle-plugin.version>3.1.2</checkstyle-plugin.version>
+		<checkstyle.version>10.9.1</checkstyle.version>
+		<checkstyle.config.url>https://raw.githubusercontent.com/OtusTeam/Spring/master/checkstyle.xml</checkstyle.config.url>
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
+	</properties>
 
 	<dependencies>
 		<dependency>
