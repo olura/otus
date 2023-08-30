@@ -5,7 +5,7 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import org.springframework.stereotype.Repository;
 import ru.otus.domain.Comment;
-import ru.otus.exception.NoFoundBookException;
+import ru.otus.exception.BookNotFoundException;
 
 import java.util.List;
 import java.util.Optional;
@@ -43,8 +43,8 @@ public class CommentRepositoryJpa implements CommentRepository {
     }
 
     @Override
-    public void deleteById(long id) throws NoFoundBookException {
+    public void deleteById(long id) throws BookNotFoundException {
         entityManager.remove(getById(id).orElseThrow(
-                () -> new NoFoundBookException("The comment with id " + id + " was not found")));
+                () -> new BookNotFoundException("The comment with id " + id + " was not found")));
     }
 }

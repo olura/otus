@@ -8,7 +8,7 @@ import ru.otus.domain.Book;
 import ru.otus.domain.Comment;
 import ru.otus.exception.AuthorNotFoundException;
 import ru.otus.exception.GenreNotFoundExeption;
-import ru.otus.exception.NoFoundBookException;
+import ru.otus.exception.BookNotFoundException;
 import ru.otus.service.BookService;
 import ru.otus.service.ConverterService;
 
@@ -32,10 +32,9 @@ public class ShellController {
         Book book;
         try {
             book = bookService.getById(id);
-        } catch (NoFoundBookException e) {
+        } catch (BookNotFoundException e) {
             return e.getMessage();
         }
-
         return converterService.convertListBooksToString(List.of(book));
     }
 
@@ -70,7 +69,7 @@ public class ShellController {
     public String deleteById(@ShellOption long id) {
         try {
             bookService.deleteById(id);
-        } catch (NoFoundBookException e) {
+        } catch (BookNotFoundException e) {
             return "The book does not delete. Error: " + e.getMessage();
         }
         return "The book delete was successful";
@@ -81,7 +80,7 @@ public class ShellController {
         Comment comment;
         try {
             comment = bookService.addComment(text, book_id);
-        } catch (NoFoundBookException e) {
+        } catch (BookNotFoundException e) {
             return "Comment does not inserted. Error: " + e.getMessage();
         }
         return "The comment added was successful to book: " + comment.getBook().getTitle();
@@ -100,7 +99,7 @@ public class ShellController {
     public String deleteCommentById(@ShellOption long id) {
         try {
             bookService.deleteCommentById(id);
-        } catch (NoFoundBookException e) {
+        } catch (BookNotFoundException e) {
             return "The comment does not delete. Error: " + e.getMessage();
         }
         return "The comment delete was successful";

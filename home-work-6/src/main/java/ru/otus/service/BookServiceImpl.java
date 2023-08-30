@@ -13,7 +13,7 @@ import ru.otus.domain.Comment;
 import ru.otus.domain.Genre;
 import ru.otus.exception.AuthorNotFoundException;
 import ru.otus.exception.GenreNotFoundExeption;
-import ru.otus.exception.NoFoundBookException;
+import ru.otus.exception.BookNotFoundException;
 
 import java.util.List;
 
@@ -41,9 +41,9 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional(readOnly = true)
-    public Book getById(long id) throws NoFoundBookException {
+    public Book getById(long id) throws BookNotFoundException {
         return bookRepository.getById(id).orElseThrow(
-                () -> new NoFoundBookException("The book with id " + id + " was not found"));
+                () -> new BookNotFoundException("The book with id " + id + " was not found"));
     }
 
     @Override
@@ -78,7 +78,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public void deleteById(long id) throws NoFoundBookException {
+    public void deleteById(long id) throws BookNotFoundException {
         bookRepository.deleteById(id);
     }
 
@@ -90,14 +90,14 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public Comment addComment(String text, long book_id) throws NoFoundBookException {
+    public Comment addComment(String text, long book_id) throws BookNotFoundException {
         Book book = getById(book_id);
         return commentRepository.save(new Comment(text, book));
     }
 
     @Override
     @Transactional
-    public void deleteCommentById(long id) throws NoFoundBookException {
+    public void deleteCommentById(long id) throws BookNotFoundException {
         commentRepository.deleteById(id);
     }
 }

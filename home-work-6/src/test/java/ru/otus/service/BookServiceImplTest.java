@@ -16,7 +16,7 @@ import ru.otus.domain.Comment;
 import ru.otus.domain.Genre;
 import ru.otus.exception.AuthorNotFoundException;
 import ru.otus.exception.GenreNotFoundExeption;
-import ru.otus.exception.NoFoundBookException;
+import ru.otus.exception.BookNotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +49,7 @@ public class BookServiceImplTest {
 
     @DisplayName("возвращает ожидаемую книгу по её id")
     @Test
-    void shouldReturnExpectedBookById() throws NoFoundBookException {
+    void shouldReturnExpectedBookById() throws BookNotFoundException {
         Author author = new Author(1,"Pushkin");
         Genre genre = new Genre(1, "Romance");
         Book expectedBook = new Book(1,"Evgeniy Onegin", author, genre);
@@ -116,7 +116,7 @@ public class BookServiceImplTest {
 
     @DisplayName("удаляет книгу в БД по её id")
     @Test
-    void shouldDeleteBook() throws NoFoundBookException {
+    void shouldDeleteBook() throws BookNotFoundException {
 
         long id = 1;
 
@@ -150,7 +150,7 @@ public class BookServiceImplTest {
 
     @DisplayName("добавляет комментарий к книге")
     @Test
-    void shouldInsertCommentToBookById() throws NoFoundBookException {
+    void shouldInsertCommentToBookById() throws BookNotFoundException {
         Author author = new Author(1,"Test_author");
         Genre genre = new Genre(1, "Test_genre");
         Book book = new Book(1,"Test book", author, genre);
@@ -166,7 +166,7 @@ public class BookServiceImplTest {
 
     @DisplayName("удаляет комментарий в БД по его id")
     @Test
-    void shouldDeleteComment() throws NoFoundBookException {
+    void shouldDeleteComment() throws BookNotFoundException {
 
         long id = 1;
 

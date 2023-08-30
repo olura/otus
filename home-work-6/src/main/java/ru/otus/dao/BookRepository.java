@@ -1,7 +1,7 @@
 package ru.otus.dao;
 
 import ru.otus.domain.Book;
-import ru.otus.exception.NoFoundBookException;
+import ru.otus.exception.BookNotFoundException;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,5 +13,5 @@ public interface BookRepository {
 
     Book save(Book book);
 
-    void deleteById(long id) throws NoFoundBookException;
+    void deleteById(long id) throws BookNotFoundException;
 }
