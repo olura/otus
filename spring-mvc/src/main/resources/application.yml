@@ -7,8 +7,12 @@ spring:
   sql:
     init:
       mode: always
-      data-locations: data.sql
-      schema-locations: schema.sql
+#      data-locations: data.sql
+#      schema-locations: schema.sql
   jpa:
     hibernate:
       ddl-auto: none
+
+#logging:
+#  level:
+#    ROOT: ERROR
