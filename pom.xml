@@ -21,6 +21,7 @@
 		<module>home-work-2</module>
 		<module>home-work-3</module>
 		<module>spring-jdbc</module>
+		<module>spring-jpa</module>
 	</modules>
 
 	<properties>
