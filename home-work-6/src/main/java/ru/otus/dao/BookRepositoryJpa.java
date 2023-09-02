@@ -33,8 +33,9 @@ public class BookRepositoryJpa implements BookRepository {
 
     @Override
     public List<Book> getAll() {
-        TypedQuery<Book> query = entityManager.createQuery("select distinct b from Book b left join fetch " +
-                "b.author left join fetch b.genre", Book.class);
+        EntityGraph<?> entityGraph = entityManager.getEntityGraph("book-graph");
+        TypedQuery<Book> query = entityManager.createQuery("from Book", Book.class);
+        query.setHint(FETCH.getKey(), entityGraph);
         return query.getResultList();
     }
 
