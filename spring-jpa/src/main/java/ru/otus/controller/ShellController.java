@@ -45,9 +45,9 @@ public class ShellController {
     }
 
     @ShellMethod(key = {"i", "insert"}, value = "Insert book")
-    public String insert(@ShellOption String title, @ShellOption long author_id, @ShellOption long genre_id) {
+    public String insert(@ShellOption String title, @ShellOption long authorId, @ShellOption long genreId) {
         try {
-            bookService.insert(title, author_id, genre_id);
+            bookService.insert(title, authorId, genreId);
         } catch (AuthorNotFoundException | GenreNotFoundExeption e) {
             return "The book does not inserted. Error: " + e.getMessage();
         }
@@ -56,9 +56,9 @@ public class ShellController {
 
     @ShellMethod(key = {"u", "update"}, value = "Update book")
     public String update(@ShellOption long id, @ShellOption String title,
-                         @ShellOption long author_id, @ShellOption long genre_id) {
+                         @ShellOption long authorId, @ShellOption long genreId) {
         try {
-            bookService.update(id, title, author_id, genre_id);
+            bookService.update(id, title, authorId, genreId);
         } catch (AuthorNotFoundException | GenreNotFoundExeption e) {
             return "The book does not update. Error: " + e.getMessage();
         }
@@ -72,10 +72,10 @@ public class ShellController {
     }
 
     @ShellMethod(key = {"ac", "add comment"}, value = "Add comment")
-    public String addComment(@ShellOption String text, @ShellOption long book_id) {
+    public String addComment(@ShellOption String text, @ShellOption long bookId) {
         Comment comment;
         try {
-            comment = bookService.addComment(text, book_id);
+            comment = bookService.addComment(text, bookId);
         } catch (BookNotFoundException e) {
             return "Comment does not inserted. Error: " + e.getMessage();
         }
@@ -83,8 +83,8 @@ public class ShellController {
     }
 
     @ShellMethod(key = {"gc", "get comments"}, value = "Get comments")
-    public String addComment(@ShellOption long book_id) {
-        List<Comment> comment = bookService.getAllCommentToBook(book_id);
+    public String addComment(@ShellOption long bookId) {
+        List<Comment> comment = bookService.getAllCommentToBook(bookId);
         if (comment.isEmpty()) {
             return "No comments found";
         }

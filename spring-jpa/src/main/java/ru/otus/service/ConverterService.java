@@ -10,13 +10,13 @@ import java.util.List;
 @Service
 public class ConverterService {
 
-    private final String ansiReset = "\u001B[0m";
+    private static final String ANSI_RESET = "\u001B[0m";
 
-    private final String ansiBold = "\u001B[1m";
+    private static final String ANSI_BOLD = "\u001B[1m";
 
-    private final String ansiBlack = "\u001B[30m";
+    private static final String ANSI_BLACK = "\u001B[30m";
 
-    private final String ansiUnderlined = "\u001B[4m";
+    private static final String ANSI_UNDER_LINED = "\u001B[4m";
 
     public String convertListBooksToString(List<Book> books) {
 
@@ -24,11 +24,11 @@ public class ConverterService {
         StringBuilder sb = new StringBuilder();
         Formatter formatter = new Formatter(sb);
         formatter.format("|%s%s%-30s|%-20s|%-10s%s|\n",
-                ansiUnderlined, ansiBold, "Title", "Author", "Genre", ansiReset);
+                ANSI_UNDER_LINED, ANSI_BOLD, "Title", "Author", "Genre", ANSI_RESET);
 
         for (Book book: books) {
             formatter.format("%s|%-30s|%-20s|%-10s|%s\n",
-                    ansiBlack, book.getTitle(), book.getAuthor().getName(), book.getGenre().getTitle(), ansiReset);
+                    ANSI_BLACK, book.getTitle(), book.getAuthor().getName(), book.getGenre().getTitle(), ANSI_RESET);
         }
         return sb.toString();
     }
@@ -38,12 +38,12 @@ public class ConverterService {
         StringBuilder stringBuilder = new StringBuilder();
 
         for (Comment comment: comments) {
-            stringBuilder.append(ansiBlack);
+            stringBuilder.append(ANSI_BLACK);
             stringBuilder.append(comment.getId());
             stringBuilder.append(") '");
             stringBuilder.append(comment.getText());
             stringBuilder.append("' ");
-            stringBuilder.append(ansiReset);
+            stringBuilder.append(ANSI_RESET);
         }
         return stringBuilder.toString();
     }

@@ -24,7 +24,7 @@ public interface BookService {
 
     List<Comment> getAllCommentToBook(long id);
 
-    Comment addComment(String text, long book_id) throws BookNotFoundException;
+    Comment addComment(String text, long bookId) throws BookNotFoundException;
 
     void deleteCommentById(long id);
 }
