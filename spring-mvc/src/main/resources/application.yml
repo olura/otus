@@ -10,6 +10,7 @@ spring:
 #      data-locations: data.sql
 #      schema-locations: schema.sql
   jpa:
+    show-sql: true
     hibernate:
       ddl-auto: none
 
