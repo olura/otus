@@ -1,5 +1,6 @@
 package ru.otus.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,7 +15,10 @@ import ru.otus.dto.BookDto;
 import ru.otus.domain.Book;
 import ru.otus.domain.Comment;
 import ru.otus.exception.BookNotFoundException;
+import ru.otus.service.AuthorService;
 import ru.otus.service.BookService;
+import ru.otus.service.CommentService;
+import ru.otus.service.GenreService;
 
 import java.util.List;
 
@@ -23,8 +27,19 @@ public class BookController {
 
     private final BookService bookService;
 
-    public BookController(BookService bookService) {
+    private final CommentService commentService;
+
+    private final AuthorService authorService;
+
+    private final GenreService genreService;
+
+    @Autowired
+    public BookController(BookService bookService, CommentService commentService,
+                          AuthorService authorService, GenreService genreService) {
         this.bookService = bookService;
+        this.commentService = commentService;
+        this.authorService = authorService;
+        this.genreService = genreService;
     }
 
     @GetMapping("/")
@@ -38,7 +53,7 @@ public class BookController {
     public String bookPage(Model model, @PathVariable long id) {
         try {
             Book book = bookService.getById(id);
-            List<Comment> commentList = bookService.getAllCommentToBook(id);
+            List<Comment> commentList = commentService.getAllCommentToBook(id);
             model.addAttribute("book", book);
             model.addAttribute("comments", commentList);
             return "viewBook";
@@ -51,8 +66,8 @@ public class BookController {
     public String editPage(Model model, @RequestParam("id") long id) {
         try {
             Book book = bookService.getById(id);
-            List<Author> authorList = bookService.getAllAuthors();
-            List<Genre> genreList = bookService.getAllGenre();
+            List<Author> authorList = authorService.getAllAuthors();
+            List<Genre> genreList = genreService.getAllGenre();
             model.addAttribute("book", new BookDto(book));
             model.addAttribute("authors", authorList);
             model.addAttribute("genres", genreList);
@@ -70,8 +85,8 @@ public class BookController {
 
     @GetMapping ("/book")
     public String createBookPage(Model model) {
-        List<Author> authorList = bookService.getAllAuthors();
-        List<Genre> genreList = bookService.getAllGenre();
+        List<Author> authorList = authorService.getAllAuthors();
+        List<Genre> genreList = genreService.getAllGenre();
         model.addAttribute("authors", authorList);
         model.addAttribute("genres", genreList);
         return "createBook";
@@ -81,29 +96,6 @@ public class BookController {
     public String createBook(BookDto book) {
         bookService.save(book);
         return "redirect:/";
-    }
-
-    @GetMapping ("/book/{book_id}/comment")
-    public String createCommentPage(Model model, @PathVariable("book_id") long bookId) {
-        model.addAttribute("id", bookId);
-        return "createComment";
-    }
-
-    @PostMapping("/book/{book_id}/comment")
-    public String createComment(@PathVariable("book_id") long bookId, String comment) {
-        try {
-            bookService.addComment(comment, bookId);
-            System.out.println(comment);
-            return "redirect:/book/" + bookId;
-        } catch (BookNotFoundException e) {
-            return "bookNotFound";
-        }
-    }
-
-    @DeleteMapping("/book/{book_id}/comment/{id}")
-    public String deleteComment(@PathVariable("book_id") long bookId, @PathVariable("id") long commentId) {
-        bookService.deleteCommentById(commentId);
-        return "redirect:/book/" + bookId;
     }
 
     @DeleteMapping("/book/{id}")

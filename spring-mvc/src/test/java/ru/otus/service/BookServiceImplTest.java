@@ -8,12 +8,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import ru.otus.dao.AuthorRepository;
 import ru.otus.dao.BookRepository;
-import ru.otus.dao.CommentRepository;
 import ru.otus.dao.GenreRepository;
 import ru.otus.domain.Author;
 import ru.otus.domain.Book;
-import ru.otus.domain.Comment;
 import ru.otus.domain.Genre;
+import ru.otus.dto.BookDto;
 import ru.otus.exception.BookNotFoundException;
 
 import java.util.ArrayList;
@@ -41,9 +40,6 @@ public class BookServiceImplTest {
 
     @MockBean
     private GenreRepository genreRepository;
-
-    @MockBean
-    private CommentRepository commentRepository;
 
     @DisplayName("возвращает ожидаемую книгу по её id")
     @Test
@@ -77,40 +73,38 @@ public class BookServiceImplTest {
         assertEquals(expectedBooks, actualBooks);
     }
 
-//    @DisplayName("добавляет книгу в БД")
-//    @Test
-//    void shouldInsertBook() throws AuthorNotFoundException, GenreNotFoundExeption {
-//        Author author = new Author(1,"Test_author");
-//        Genre genre = new Genre(1, "Test_genre");
-//        Book expectedBook = new Book(1,"Test book", author, genre);
-//
-//        given(bookRepository.save(any())).willReturn(expectedBook);
-//        given(authorRepository.findById(anyLong())).willReturn(Optional.of(author));
-//        given(genreRepository.findById(anyLong())).willReturn(Optional.of(genre));
-//
-//        Book actualBook = bookService.insert(
-//                expectedBook.getTitle(), expectedBook.getAuthor().getId(), expectedBook.getGenre().getId());
-//        verify(bookRepository, times(1)).save(any());
-//        assertEquals(expectedBook, actualBook);
-//    }
+    @DisplayName("добавляет книгу в БД")
+    @Test
+    void shouldInsertBook() {
+        Author author = new Author(1,"Test_author");
+        Genre genre = new Genre(1, "Test_genre");
+        Book expectedBook = new Book(1,"Test book", author, genre);
 
-//    @DisplayName("обновляет книгу в БД")
-//    @Test
-//    void shouldUpdateBook() throws AuthorNotFoundException, GenreNotFoundExeption {
-//        Author author = new Author(1,"Test_author");
-//        Genre genre = new Genre(1, "Test_genre");
-//        Book expectedBook = new Book(1,"Test book", author, genre);
-//
-//        given(bookRepository.save(any())).willReturn(expectedBook);
-//        given(authorRepository.findById(anyLong())).willReturn(Optional.of(author));
-//        given(genreRepository.findById(anyLong())).willReturn(Optional.of(genre));
-//
-//        Book actualBook = bookService.update(expectedBook.getId(), expectedBook.getTitle(),
-//                expectedBook.getAuthor().getId(), expectedBook.getGenre().getId());
-//
-//        verify(bookRepository, times(1)).save(any());
-//        assertEquals(expectedBook, actualBook);
-//    }
+        given(bookRepository.save(any())).willReturn(expectedBook);
+        given(authorRepository.findById(anyLong())).willReturn(Optional.of(author));
+        given(genreRepository.findById(anyLong())).willReturn(Optional.of(genre));
+
+        Book actualBook = bookService.save(new BookDto(expectedBook));
+        verify(bookRepository, times(1)).save(any());
+        assertEquals(expectedBook, actualBook);
+    }
+
+    @DisplayName("обновляет книгу в БД")
+    @Test
+    void shouldUpdateBook() {
+        Author author = new Author(1,"Test_author");
+        Genre genre = new Genre(1, "Test_genre");
+        Book expectedBook = new Book(1,"Test book", author, genre);
+
+        given(bookRepository.save(any())).willReturn(expectedBook);
+        given(authorRepository.findById(anyLong())).willReturn(Optional.of(author));
+        given(genreRepository.findById(anyLong())).willReturn(Optional.of(genre));
+
+        Book actualBook = bookService.save(new BookDto(expectedBook));
+
+        verify(bookRepository, times(1)).save(any());
+        assertEquals(expectedBook, actualBook);
+    }
 
     @DisplayName("удаляет книгу в БД по её id")
     @Test
@@ -122,56 +116,6 @@ public class BookServiceImplTest {
         doNothing().when(bookRepository).deleteById(valueCapture.capture());
 
         bookService.deleteById(id);
-        assertEquals(id, valueCapture.getValue());
-    }
-
-    @DisplayName("возвращает список всех комментариев книги")
-    @Test
-    void shouldReturnExpectedCommentListToBook() {
-
-        Author author1 = new Author(1,"Pushkin");
-        Genre genre1 = new Genre(1, "Romance");
-        Author author2 = new Author(2,"Test_author");
-        Genre genre2 = new Genre(2, "Test_genre");
-        Book book1 = new Book(1,"Evgeniy Onegin", author1, genre1);
-        Book book2 = new Book(2,"Test book", author2, genre2);
-
-        List<Comment> expectedComment = new ArrayList<>();
-        expectedComment.add(new Comment("first comment", book1));
-        expectedComment.add(new Comment("second comment", book2));
-
-        given(commentRepository.findByBookId(anyLong())).willReturn(expectedComment);
-
-        List<Comment> actualComment = bookService.getAllCommentToBook(1);
-        assertEquals(expectedComment, actualComment);
-    }
-
-    @DisplayName("добавляет комментарий к книге")
-    @Test
-    void shouldInsertCommentToBookById() throws BookNotFoundException {
-        Author author = new Author(1,"Test_author");
-        Genre genre = new Genre(1, "Test_genre");
-        Book book = new Book(1,"Test book", author, genre);
-        Comment expectedComment = new Comment("first comment", book);
-
-        given(commentRepository.save(any())).willReturn(expectedComment);
-        given(bookRepository.findById(anyLong())).willReturn(Optional.of(book));
-
-        Comment actualComment = bookService.addComment(expectedComment.getText(), expectedComment.getBook().getId());
-        verify(commentRepository, times(1)).save(any());
-        assertEquals(expectedComment, actualComment);
-    }
-
-    @DisplayName("удаляет комментарий в БД по его id")
-    @Test
-    void shouldDeleteComment() {
-
-        long id = 1;
-
-        ArgumentCaptor<Long> valueCapture = ArgumentCaptor.forClass(Long.class);
-        doNothing().when(commentRepository).deleteById(valueCapture.capture());
-
-        commentRepository.deleteById(id);
         assertEquals(id, valueCapture.getValue());
     }
 }
