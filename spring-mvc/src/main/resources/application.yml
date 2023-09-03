@@ -10,10 +10,14 @@ spring:
 #      data-locations: data.sql
 #      schema-locations: schema.sql
   jpa:
+    open-in-view: false
     show-sql: true
     hibernate:
       ddl-auto: none
-
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true
 #logging:
 #  level:
 #    ROOT: ERROR

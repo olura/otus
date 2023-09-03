@@ -22,11 +22,25 @@
         .books td:last-child, td:first-child {
             width: 50px;
         }
+
+        .comments {
+            border: 1px solid steelblue;
+            width: 300px;
+            border-collapse: collapse;
+        }
+
+        .comments tr td, th {
+            padding: 5px;
+            border: 1px solid steelblue;
+        }
+
+        .comments td:last-child, td:first-child {
+            width: 50px;
+        }
     </style>
 </head>
 <body>
 <h3>Book:</h3>
-
 <table class="books">
   <thead>
   <tr>
@@ -49,5 +63,39 @@
   </tr>
   </tbody>
 </table>
+
+<br>
+<h4>Comments:</h4>
+
+<table class="comments">
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>Text</th>
+    <th>Action</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:object="${comment}" th:each="comment : ${comments}">
+    <td th:text="*{id}">1</td>
+    <td th:text="*{text}">John Doe</td>
+    <td>
+      <form th:method="delete" th:action="@{/book/__${book.id}__/comment/__*{id}__}">
+        <input type="submit" value="Delete">
+      </form>
+    </td>
+  </tr>
+  </tbody>
+</table>
+<h5>
+  <a href="createComment.html" th:href="@{/book/__${book.id}__/comment}">Add comment</a>
+</h5>
+
+<br/>
+
+<h4>
+  <a href="viewBooks.html" th:href="@{/}">All books</a>
+</h4>
+
 </body>
 </html>

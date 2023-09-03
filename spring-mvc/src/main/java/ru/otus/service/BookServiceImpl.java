@@ -11,8 +11,7 @@ import ru.otus.domain.Author;
 import ru.otus.domain.Book;
 import ru.otus.domain.Comment;
 import ru.otus.domain.Genre;
-import ru.otus.exception.AuthorNotFoundException;
-import ru.otus.exception.GenreNotFoundExeption;
+import ru.otus.dto.BookDto;
 import ru.otus.exception.BookNotFoundException;
 
 import java.util.List;
@@ -54,25 +53,10 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public Book insert(String title, long authorId, long genreId)
-            throws AuthorNotFoundException, GenreNotFoundExeption {
-        Author author = authorRepository.findById(authorId)
-                .orElseThrow(() -> new AuthorNotFoundException("This author does not exist"));
-        Genre genre = genreRepository.findById(genreId)
-                .orElseThrow(() -> new GenreNotFoundExeption("This genre does not exist"));
-        Book book = new Book(title, author, genre);
-        return bookRepository.save(book);
-    }
-
-    @Override
-    @Transactional
-    public Book update(long id, String title, long authorId, long genreId)
-            throws AuthorNotFoundException, GenreNotFoundExeption {
-        Author author = authorRepository.findById(authorId)
-                .orElseThrow(() -> new AuthorNotFoundException("This author does not exist"));
-        Genre genre = genreRepository.findById(genreId)
-                .orElseThrow(() -> new GenreNotFoundExeption("This genre does not exist"));
-        Book book = new Book(id, title, author, genre);
+    public Book save(BookDto bookDto) {
+        Author author = authorRepository.findByName(bookDto.getAuthor());
+        Genre genre = genreRepository.findByTitle(bookDto.getGenre());
+        Book book = new Book(bookDto.getId(), bookDto.getTitle(), author, genre);
         return bookRepository.save(book);
     }
 
@@ -85,7 +69,7 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional(readOnly = true)
     public List<Comment> getAllCommentToBook(long id) {
-        return commentRepository.findByBook_id(id);
+        return commentRepository.findByBookId(id);
     }
 
     @Override
@@ -100,5 +84,15 @@ public class BookServiceImpl implements BookService {
     @Transactional
     public void deleteCommentById(long id) {
         commentRepository.deleteById(id);
+    }
+
+    @Override
+    public List<Author> getAllAuthors() {
+        return authorRepository.findAll();
+    }
+
+    @Override
+    public List<Genre> getAllGenre() {
+        return genreRepository.findAll();
     }
 }

@@ -10,7 +10,7 @@
 
         .books {
             border: 1px solid steelblue;
-            width: 500px;
+            width: 700px;
             border-collapse: collapse;
         }
 
@@ -34,7 +34,8 @@
     <th>Title</th>
     <th>Author</th>
     <th>Genre</th>
-    <th>Action</th>
+    <th>View book</th>
+    <th>Delete book</th>
   </tr>
   </thead>
   <tbody>
@@ -44,10 +45,20 @@
     <td th:text="*{author.name}">John Doe</td>
     <td th:text="*{genre.title}">John Doe</td>
     <td>
-      <a href="edit.html" th:href="@{/book/{id}(id=*{id})}">Open</a>
+      <a href="viewBook.html" th:href="@{/book/__*{id}__}">View</a>
+    </td>
+    <td>
+      <form th:method="delete" th:action="@{/book/__*{id}__}">
+        <input type="submit" value="Delete">
+      </form>
     </td>
   </tr>
   </tbody>
 </table>
+
+<h4>
+  <a href="createBook.html" th:href="@{/book}">Create new book</a>
+</h4>
+
 </body>
 </html>
