@@ -142,7 +142,7 @@ public class BookServiceImplTest {
         expectedComment.add(new Comment("first comment", book1));
         expectedComment.add(new Comment("second comment", book2));
 
-        given(commentRepository.findByBook_id(anyLong())).willReturn(expectedComment);
+        given(commentRepository.findByBookId(anyLong())).willReturn(expectedComment);
 
         List<Comment> actualComment = bookService.getAllCommentToBook(1);
         assertEquals(expectedComment, actualComment);

@@ -9,7 +9,6 @@ import ru.otus.domain.Author;
 import ru.otus.domain.Book;
 import ru.otus.domain.Comment;
 import ru.otus.domain.Genre;
-import ru.otus.exception.BookNotFoundException;
 
 import java.util.List;
 
@@ -39,16 +38,16 @@ public class CommentRepositoryJpaTest {
     @DisplayName("возвращает ожидаемый список комментариев")
     @Test
     void shouldReturnExpectedCommentList() {
-        List<Comment> comments = commentRepository.findByBook_id(1L);
+        List<Comment> comments = commentRepository.findByBookId(1L);
         assertEquals(2, comments.size());
-        List<Comment> comments2 = commentRepository.findByBook_id(2L);
+        List<Comment> comments2 = commentRepository.findByBookId(2L);
         assertEquals(0, comments2.size());
     }
 
     @DisplayName("добавляет комментарий в БД")
     @Test
     void shouldInsertComment() {
-        int beforeSize = commentRepository.findByBook_id(1L).size();
+        int beforeSize = commentRepository.findByBookId(1L).size();
 
         Book book = entityManager.find(Book.class, 1);
         Comment expectedComment = new Comment("first comment", book);
@@ -57,14 +56,14 @@ public class CommentRepositoryJpaTest {
         Comment actualComment = entityManager.find(Comment.class, comment.getId());
         assertEquals(expectedComment, actualComment);
 
-        int afterSize =  commentRepository.findByBook_id(1L).size();
+        int afterSize =  commentRepository.findByBookId(1L).size();
         assertEquals(beforeSize + 1, afterSize);
     }
 
     @DisplayName("обновляет комментарий в БД")
     @Test
     void shouldUpdateComment() {
-        int beforeSize =  commentRepository.findByBook_id(1L).size();
+        int beforeSize =  commentRepository.findByBookId(1L).size();
 
         Book book = entityManager.find(Book.class, 1);
         Comment expectedComment = new Comment(1, "new comment", book);
@@ -73,20 +72,20 @@ public class CommentRepositoryJpaTest {
         Comment actualComment = entityManager.find(Comment.class, expectedComment.getId());
         assertEquals(expectedComment, actualComment);
 
-        int afterSize =  commentRepository.findByBook_id(1L).size();
+        int afterSize =  commentRepository.findByBookId(1L).size();
         assertEquals(beforeSize, afterSize);
     }
 
     @DisplayName("удаляет комментарий в БД по его id")
     @Test
     void shouldDeleteComment() {
-        int beforeSize =  commentRepository.findByBook_id(1L).size();
+        int beforeSize =  commentRepository.findByBookId(1L).size();
 
         commentRepository.deleteById(1L);
 
         assertNull(entityManager.find(Comment.class, 1));
 
-        int afterSize =  commentRepository.findByBook_id(1L).size();
+        int afterSize =  commentRepository.findByBookId(1L).size();
         assertEquals(beforeSize - 1, afterSize);
     }
 }
