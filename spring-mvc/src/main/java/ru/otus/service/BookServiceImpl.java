@@ -90,8 +90,8 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public Comment addComment(String text, long book_id) throws BookNotFoundException {
-        Book book = getById(book_id);
+    public Comment addComment(String text, long bookId) throws BookNotFoundException {
+        Book book = getById(bookId);
         return commentRepository.save(new Comment(text, book));
 
     }
