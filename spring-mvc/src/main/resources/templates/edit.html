@@ -24,7 +24,7 @@
 </head>
 <body>
 
-<form id="edit-form" action="edit.html" th:method="patch" th:action="@{/edit(id=${book.id})}" th:object="${book}">
+<form id="edit-form" action="edit.html" th:method="put" th:action="@{/edit(id=${book.id})}" th:object="${book}">
     <h3>Book Info:</h3>
 
     <div class="row">

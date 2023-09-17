@@ -111,7 +111,7 @@ public class BookControllerTest {
 
         given(bookService.save(new BookDto(book))).willReturn(book);
 
-        mvc.perform(patch("/edit"))
+        mvc.perform(put( "/edit"))
                 .andExpect(status().is3xxRedirection());
     }
 
