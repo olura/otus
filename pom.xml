@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>ru.otus</groupId>
-	<artifactId>architecture-origins</artifactId>
+	<artifactId>home-work</artifactId>
 	<version>1.0</version>
 
 	<parent>
@@ -20,8 +20,10 @@
 		<module>home-work-1</module>
 		<module>home-work-2</module>
 		<module>home-work-3</module>
+		<module>home-work-4</module>
 		<module>spring-jdbc</module>
 		<module>spring-mvc</module>
+		<module>spring-jpa</module>
 	</modules>
 
 	<properties>

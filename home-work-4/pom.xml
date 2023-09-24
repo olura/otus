@@ -11,7 +11,7 @@
 
 	<parent>
 		<groupId>ru.otus</groupId>
-		<artifactId>architecture-origins</artifactId>
+		<artifactId>home-work</artifactId>
 		<version>1.0</version>
 	</parent>
 
