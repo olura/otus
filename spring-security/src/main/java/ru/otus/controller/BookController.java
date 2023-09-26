@@ -1,23 +1,20 @@
 package ru.otus.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import ru.otus.domain.Author;
-import ru.otus.domain.Genre;
-import ru.otus.dto.BookDto;
 import ru.otus.domain.Book;
 import ru.otus.domain.Comment;
+import ru.otus.domain.Genre;
+import ru.otus.dto.BookDto;
 import ru.otus.exception.BookNotFoundException;
-import ru.otus.security.MyUserDetails;
 import ru.otus.service.AuthorService;
 import ru.otus.service.BookService;
 import ru.otus.service.CommentService;
@@ -49,11 +46,6 @@ public class BookController {
     public String booksPage(Model model) {
         List<Book> bookList = bookService.getAll();
         model.addAttribute("books", bookList);
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
-        System.out.println(userDetails.getUser());
-
         return "viewBooks";
     }
 

@@ -6,6 +6,7 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.otus.domain.Author;
 import ru.otus.domain.Book;
@@ -22,6 +23,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -45,7 +47,10 @@ public class BookControllerTest {
     @MockBean
     private GenreService genreService;
 
+    private final long bookId = 1;
+
     @DisplayName("возвращает все книги")
+    @WithMockUser(username = "user")
     @Test
     void booksPageShouldReturnCorrectView() throws Exception {
         Author author = new Author(1,"Test_author");
@@ -62,6 +67,7 @@ public class BookControllerTest {
     }
 
     @DisplayName("возвращает книгу со всеми комментариями")
+    @WithMockUser(username = "user")
     @Test
     void bookPageShouldReturnCorrectView() throws Exception {
         Author author = new Author(1,"Test_author");
@@ -81,6 +87,7 @@ public class BookControllerTest {
     }
 
     @DisplayName("возвращает страницу для редактирования книги")
+    @WithMockUser(username = "user")
     @Test
     void editPageShouldReturnCorrectView() throws Exception {
         Author author1 = new Author(1,"Test_author1");
@@ -103,6 +110,7 @@ public class BookControllerTest {
     }
 
     @DisplayName("сохраняет книгу")
+    @WithMockUser(username = "user")
     @Test
     void saveBookShouldReturnCorrectView() throws Exception {
         Author author = new Author(1,"Test_author");
@@ -111,12 +119,13 @@ public class BookControllerTest {
 
         given(bookService.save(new BookDto(book))).willReturn(book);
 
-        mvc.perform(put( "/edit"))
+        mvc.perform(put( "/edit").with(csrf()))
                 .andExpect(status().is3xxRedirection());
     }
 
 
     @DisplayName("возвращает страницу для создания новой книги")
+    @WithMockUser(username = "user")
     @Test
     void createBookPageShouldReturnCorrectView() throws Exception {
         Author author1 = new Author(1,"Test_author1");
@@ -136,6 +145,7 @@ public class BookControllerTest {
     }
 
     @DisplayName("создаёт новую книгу")
+    @WithMockUser(username = "user")
     @Test
     void createBookShouldReturnCorrectView() throws Exception {
         long bookId = 1;
@@ -144,10 +154,12 @@ public class BookControllerTest {
         Book book = new Book(1,"Test book", author, genre);
 
         given(bookService.save(new BookDto(book))).willReturn(book);
-        mvc.perform(post("/book"))
+        mvc.perform(post("/book").with(csrf()))
                 .andExpect(status().is3xxRedirection());
     }
+
     @DisplayName("удаляет книгу")
+    @WithMockUser(username = "user")
     @Test
     void deleteBookShouldReturnCorrectView() throws Exception {
         long bookId = 1;
@@ -155,10 +167,65 @@ public class BookControllerTest {
         ArgumentCaptor<Long> valueCapture = ArgumentCaptor.forClass(Long.class);
         doNothing().when(bookService).deleteById(valueCapture.capture());
 
-        mvc.perform(delete("/book/" + bookId))
+        mvc.perform(delete("/book/" + bookId).with(csrf()))
                 .andExpect(status().is3xxRedirection());
         assertEquals(bookId, valueCapture.getValue());
     }
 
+    @DisplayName("неавторизированным пользователям разрешает доступ к странице логина")
+    @Test
+    void givenAccessToLoginPage() throws Exception {
+        mvc.perform(get("/login"))
+                .andExpect(status().isOk());
+    }
+
+    @DisplayName("неавторизированным пользователям запрещает доступ к корневой странице")
+    @Test
+    void forbiddenBooksPage() throws Exception {
+        mvc.perform(get("/"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @DisplayName("неавторизированным пользователям запрещает доступ к странице книги")
+    @Test
+    void forbiddenBookPage() throws Exception {
+        mvc.perform(get("/book/" + bookId))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @DisplayName("неавторизированным пользователям запрещает доступ к странице для редактирования книги")
+    @Test
+    void forbiddenBookEditPage() throws Exception {
+        mvc.perform(get("/edit?id=" + bookId))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @DisplayName("неавторизированным пользователям запрещает сохранять книгу")
+    @Test
+    void forbiddenToSaveBook() throws Exception {
+        mvc.perform(put( "/edit").with(csrf()))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @DisplayName("неавторизированным пользователям запрещает возвращать страницу для создания новой книги")
+    @Test
+    void forbiddenToReturnCreateBookPage() throws Exception {
+        mvc.perform(get("/book"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @DisplayName("неавторизированным пользователям запрещает создавать новую книгу")
+    @Test
+    void forbiddenToCreateBook() throws Exception {
+        mvc.perform(post("/book").with(csrf()))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @DisplayName("неавторизированным пользователям запрещает удалять книгу")
+    @Test
+    void forbiddenToDeleteBook() throws Exception {
+        mvc.perform(delete("/book/" + bookId).with(csrf()))
+                .andExpect(status().isUnauthorized());
+    }
 }
 
