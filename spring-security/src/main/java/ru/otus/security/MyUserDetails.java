@@ -1,10 +1,12 @@
 package ru.otus.security;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import ru.otus.domain.User;
 
 import java.util.Collection;
+import java.util.Collections;
 
 public class MyUserDetails implements UserDetails {
 
@@ -16,7 +18,7 @@ public class MyUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return Collections.singleton(new SimpleGrantedAuthority(user.getRole()));
     }
 
     @Override

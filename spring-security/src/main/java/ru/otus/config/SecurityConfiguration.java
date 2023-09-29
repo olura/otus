@@ -2,6 +2,7 @@ package ru.otus.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -19,6 +20,10 @@ public class SecurityConfiguration {
         http
                 .csrf(withDefaults())
                 .authorizeHttpRequests((authorize) -> authorize
+                        .requestMatchers("/edit").hasRole("ADMIN")
+                        .requestMatchers("/book").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/book/*").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/book/*/comment/*").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin(withDefaults());

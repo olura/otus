@@ -31,5 +31,6 @@ create table Comment (
 create table Users (
 	username varchar not null primary key,
 	password varchar not null,
-	email varchar not null
+	email varchar not null,
+	role varchar not null
 );

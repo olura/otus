@@ -13,6 +13,6 @@ insert into book(title, author_id, genre_id) values ('Prestuplenie i nakazanie',
 insert into Comment(text, book_id) values ('first comment', 1);
 insert into Comment(text, book_id) values ('second comment', 1);
 
-insert into Users(username, password, email) values ('admin', '$2a$10$7OpFR2kzKhxvwe37Pi2KL.maJP8wfv8PO/.7sn56Cs8dvvkRwzFgW', 'admin@email.ru');
-insert into Users(username, password, email) values ('user', '$2a$10$2Pb36deyHJDMmdCRwzL9C.gbKo2s68SNER7JYttg5JgQ9VzjHQkOO', 'user@email.ru');
+insert into Users(username, password, email, role) values ('admin', '$2a$10$7OpFR2kzKhxvwe37Pi2KL.maJP8wfv8PO/.7sn56Cs8dvvkRwzFgW', 'admin@email.ru', 'ROLE_ADMIN');
+insert into Users(username, password, email, role) values ('user', '$2a$10$2Pb36deyHJDMmdCRwzL9C.gbKo2s68SNER7JYttg5JgQ9VzjHQkOO', 'user@email.ru', 'ROLE_USER');
 
