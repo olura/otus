@@ -8,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.otus.config.SecurityConfiguration;
 import ru.otus.domain.Author;
 import ru.otus.domain.Book;
 import ru.otus.domain.Comment;
@@ -22,9 +23,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DisplayName("Класс CommentControllerTest ")
-@WebMvcTest(CommentController.class)
-public class CommentControllerTest {
+@DisplayName("Класс CommentControllerTest пользователю с ролью ADMIN ")
+@WebMvcTest({CommentController.class, SecurityConfiguration.class})
+@WithMockUser(roles = {"ADMIN"})
+public class CommentControllerSecurityAdminTest {
 
     @Autowired
     private MockMvc mvc;
@@ -36,17 +38,14 @@ public class CommentControllerTest {
 
     @DisplayName("возвращает страницу для создания нового коментария")
     @Test
-    @WithMockUser(username = "user")
     void createCommentPageShouldReturnCorrectView() throws Exception {
-        long bookId = 1;
         mvc.perform(get("/book/" + bookId + "/comment"))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("id", bookId));
     }
 
-    @DisplayName("создаёт новый коментарий")
+    @DisplayName("позволяет создавать новый коментарий")
     @Test
-    @WithMockUser(username = "user")
     void createCommentShouldReturnCorrectView() throws Exception {
         Author author = new Author(1,"Test_author");
         Genre genre = new Genre(1, "Test_genre");
@@ -57,9 +56,8 @@ public class CommentControllerTest {
         mvc.perform(post("/book/" + bookId + "/comment").with(csrf()))
                 .andExpect(status().is3xxRedirection());
     }
-    @DisplayName("удаляет коментарий")
+    @DisplayName("позволяет удалять коментарий")
     @Test
-    @WithMockUser(username = "user")
     void deleteBookShouldReturnCorrectView() throws Exception {
         ArgumentCaptor<Long> valueCapture = ArgumentCaptor.forClass(Long.class);
         doNothing().when(commentService).deleteCommentById(valueCapture.capture());
@@ -68,5 +66,4 @@ public class CommentControllerTest {
                 .andExpect(status().is3xxRedirection());
         assertEquals(bookId, valueCapture.getValue());
     }
-
 }

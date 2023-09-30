@@ -8,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.otus.config.SecurityConfiguration;
 import ru.otus.domain.Author;
 import ru.otus.domain.Book;
 import ru.otus.domain.Comment;
@@ -28,10 +29,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DisplayName("Класс BookControllerTest ")
-@WebMvcTest(BookController.class)
-@WithMockUser
-public class BookControllerTest {
+@DisplayName("Класс BookControllerTest пользователю с ролью ADMIN ")
+@WebMvcTest({BookController.class, SecurityConfiguration.class})
+@WithMockUser(roles = {"ADMIN"})
+public class BookControllerSecurityAdminTest {
 
     @Autowired
     private MockMvc mvc;
@@ -107,7 +108,7 @@ public class BookControllerTest {
     }
 
 
-    @DisplayName("сохраняет книгу")
+    @DisplayName("позволяет сохранять книгу")
     @Test
     void saveBookShouldReturnCorrectView() throws Exception {
         Author author = new Author(1,"Test_author");
@@ -140,7 +141,7 @@ public class BookControllerTest {
                 .andExpect(model().attribute("genres", genreList));
     }
 
-    @DisplayName("создаёт новую книгу")
+    @DisplayName("позволяет создавать новую книгу")
     @Test
     void createBookShouldReturnCorrectView() throws Exception {
         long bookId = 1;

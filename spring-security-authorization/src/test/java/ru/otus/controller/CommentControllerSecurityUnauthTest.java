@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.otus.config.SecurityConfiguration;
 import ru.otus.service.CommentService;
@@ -15,9 +14,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DisplayName("Класс CommentControllerTest ")
-@WebMvcTest(CommentController.class)
-@ContextConfiguration(classes = {SecurityConfiguration.class})
-public class CommentControllerSecurityTest {
+@WebMvcTest({CommentController.class, SecurityConfiguration.class})
+public class CommentControllerSecurityUnauthTest {
 
     @Autowired
     private MockMvc mvc;
@@ -29,7 +27,7 @@ public class CommentControllerSecurityTest {
     @DisplayName("неавторизированному пользователю не возвращает страницу для создания нового коментария")
     @Test
     void forbiddenCreateCommentPage() throws Exception {
-        mvc.perform(get("/book/" + bookId + "/comment"))
+        mvc.perform(get("/book/" + bookId + "/comment").with(csrf()))
                 .andExpect(status().is3xxRedirection());
     }
 
