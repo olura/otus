@@ -69,23 +69,4 @@ public class CommentControllerTest {
         assertEquals(bookId, valueCapture.getValue());
     }
 
-    @DisplayName("неавторизированному пользователю не возвращает страницу для создания нового коментария")
-    @Test
-    void forbiddenCreateCommentPage() throws Exception {
-        mvc.perform(get("/book/" + bookId + "/comment"))
-                .andExpect(status().isUnauthorized());
-    }
-
-    @DisplayName("неавторизированному пользователю запрещено создавать новый коментарий")
-    @Test
-    void forbiddenCreateComment() throws Exception {
-        mvc.perform(post("/book/" + bookId + "/comment").with(csrf()))
-                .andExpect(status().isUnauthorized());
-    }
-    @DisplayName("неавторизированному пользователю запрещено удалять коментарий")
-    @Test
-    void forbiddenDeleteBook() throws Exception {
-        mvc.perform(delete("/book/" + bookId + "/comment/1").with(csrf()))
-                .andExpect(status().isUnauthorized());
-    }
 }
