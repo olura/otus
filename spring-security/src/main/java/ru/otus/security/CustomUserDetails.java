@@ -6,11 +6,11 @@ import ru.otus.domain.User;
 
 import java.util.Collection;
 
-public class MyUserDetails implements UserDetails {
+public class CustomUserDetails implements UserDetails {
 
     private final User user;
 
-    public MyUserDetails(User user) {
+    public CustomUserDetails(User user) {
         this.user = user;
     }
 
