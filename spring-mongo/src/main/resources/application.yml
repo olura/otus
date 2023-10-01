@@ -1,22 +1,17 @@
 spring:
   data:
     mongodb:
-      port: 0 # when flapdoodle using
-      database: company
+      host: localhost
+      port: 27017
+      database: books
+
   mvc:
     hiddenmethod:
       filter:
         enabled: true
 
-de:
-  flapdoodle:
-    mongodb:
-      embedded:
-        version: 4.0.2
-
 mongock:
   runner-type: "ApplicationRunner" # default
-#  runner-type: "InitializingBean"
   change-logs-scan-package:
     - ru.otus.mongock.changelog
   mongo-db:
@@ -24,7 +19,6 @@ mongock:
       journal: false
     read-concern: local
 
-
-#logging:
-#  level:
-#    ROOT: ERROR
+logging:
+  level:
+    ROOT: ERROR

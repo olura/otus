@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Objects;
@@ -22,8 +23,7 @@ public class Comment {
 
     private String text;
 
-//    @ManyToOne(targetEntity = Book.class, cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
-//    @JoinColumn(name = "book_id", referencedColumnName = "id")
+    @DBRef
     private Book book;
 
     public Comment(String text, Book book) {
