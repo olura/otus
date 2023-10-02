@@ -1,17 +1,21 @@
 spring:
-  datasource:
-    url: jdbc:h2:mem:testdb
-  shell:
-    interactive:
-      enabled: false
-  jpa:
-    generate-ddl: false
-    #generate-ddl: true
-    hibernate:
-      ddl-auto: none
+  data:
+    mongodb:
+      port: 0 # when flapdoodle using
+      database: books-test
 
-  sql:
-    init:
-      mode: always
-      data-locations: data.sql
-      schema-locations: schema.sql
+de:
+  flapdoodle:
+    mongodb:
+      embedded:
+        version: 4.0.2
+
+mongock:
+#  runner-type: "ApplicationRunner" # default
+  runner-type: "InitializingBean"
+  change-logs-scan-package:
+    - ru.otus.changelog
+  mongo-db:
+    write-concern:
+      journal: false
+    read-concern: local
