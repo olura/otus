@@ -6,6 +6,7 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.otus.domain.Author;
 import ru.otus.domain.Book;
@@ -21,7 +22,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DisplayName("Класс CommentControllerTest ")
-@WebMvcTest(CommentController.class)
+@WebMvcTest()
+@ContextConfiguration(classes = CommentController.class)
 public class CommentControllerTest {
 
     @Autowired
@@ -33,7 +35,7 @@ public class CommentControllerTest {
     @DisplayName("возвращает страницу для создания нового коментария")
     @Test
     void createCommentPageShouldReturnCorrectView() throws Exception {
-        long bookId = 1;
+        String bookId = "1";
         mvc.perform(get("/book/" + bookId + "/comment"))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("id", bookId));
@@ -55,7 +57,7 @@ public class CommentControllerTest {
     @DisplayName("удаляет коментарий")
     @Test
     void deleteBookShouldReturnCorrectView() throws Exception {
-        long bookId = 1;
+        String bookId = "1";
 
         ArgumentCaptor<String> valueCapture = ArgumentCaptor.forClass(String.class);
         doNothing().when(commentService).deleteCommentById(valueCapture.capture());

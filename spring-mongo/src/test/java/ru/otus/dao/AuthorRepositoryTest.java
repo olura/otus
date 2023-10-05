@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.test.annotation.DirtiesContext;
 import ru.otus.domain.Author;
 
 import java.util.List;
@@ -33,6 +34,7 @@ public class AuthorRepositoryTest {
         assertEquals(4, author.size());
     }
 
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @DisplayName("сохраняет автора в БД")
     @Test
     void shouldInsertAuthor() {
@@ -51,7 +53,5 @@ public class AuthorRepositoryTest {
         assertEquals(expectedAuthor, actualAuthor1);
         int afterInsertDuplicateSize = authorRepository.findAll().size();
         assertEquals(afterSize, afterInsertDuplicateSize);
-
-        authorRepository.deleteById(author.getId());
     }
 }

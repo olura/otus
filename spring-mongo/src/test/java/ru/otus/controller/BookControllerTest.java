@@ -6,6 +6,7 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.otus.domain.Author;
 import ru.otus.domain.Book;
@@ -27,7 +28,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @DisplayName("Класс BookControllerTest ")
-@WebMvcTest(BookController.class)
+@WebMvcTest()
+@ContextConfiguration(classes = BookController.class)
 public class BookControllerTest {
 
     @Autowired
@@ -150,7 +152,7 @@ public class BookControllerTest {
     @DisplayName("удаляет книгу")
     @Test
     void deleteBookShouldReturnCorrectView() throws Exception {
-        long bookId = 1;
+        String bookId = "1";
 
         ArgumentCaptor<String> valueCapture = ArgumentCaptor.forClass(String.class);
         doNothing().when(bookService).deleteById(valueCapture.capture());

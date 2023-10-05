@@ -17,7 +17,6 @@ import java.util.Objects;
 @AllArgsConstructor
 @Document(collection = "comment")
 public class Comment {
-
     @Id
     private String id;
 

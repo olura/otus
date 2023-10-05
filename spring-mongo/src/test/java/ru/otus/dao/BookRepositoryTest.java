@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.test.annotation.DirtiesContext;
 import ru.otus.domain.Author;
 import ru.otus.domain.Book;
 import ru.otus.domain.Genre;
@@ -44,6 +45,7 @@ public class BookRepositoryTest {
         assertEquals(2, books.size());
     }
 
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @DisplayName("добавляет книгу в БД")
     @Test
     void shouldInsertBook() {
@@ -61,6 +63,7 @@ public class BookRepositoryTest {
         assertEquals(beforeSize + 1, afterSize);
     }
 
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @DisplayName("обновляет книгу в БД")
     @Test
     void shouldUpdateBook() {
@@ -81,13 +84,14 @@ public class BookRepositoryTest {
         assertEquals(beforeSize, afterSize);
     }
 
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @DisplayName("удаляет книгу в БД по её id")
     @Test
     void shouldDeleteBook() {
         int beforeSize = bookRepository.findAll().size();
 
-        bookRepository.deleteById("2");
-        assertEquals(Optional.empty(), bookRepository.findById("2"));
+        bookRepository.deleteById("1");
+        assertEquals(Optional.empty(), bookRepository.findById("1"));
 
         int afterSize = bookRepository.findAll().size();
         assertEquals(beforeSize - 1, afterSize);

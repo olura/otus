@@ -4,10 +4,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.annotation.DirtiesContext;
 import ru.otus.domain.Author;
 import ru.otus.domain.Book;
 import ru.otus.domain.Comment;
 import ru.otus.domain.Genre;
+import ru.otus.events.CommentCascadeDeleteEventListener;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DisplayName("Класс CommentRepositoryJpaTest ")
 @DataMongoTest
+@Import(CommentCascadeDeleteEventListener.class)
 public class CommentRepositoryTest {
 
     @Autowired
@@ -44,6 +48,7 @@ public class CommentRepositoryTest {
         assertEquals(0, comments2.size());
     }
 
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @DisplayName("добавляет комментарий в БД")
     @Test
     void shouldInsertComment() {
@@ -60,6 +65,7 @@ public class CommentRepositoryTest {
         assertEquals(beforeSize + 1, afterSize);
     }
 
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @DisplayName("обновляет комментарий в БД")
     @Test
     void shouldUpdateComment() {
@@ -76,16 +82,33 @@ public class CommentRepositoryTest {
         assertEquals(beforeSize, afterSize);
     }
 
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @DisplayName("удаляет комментарий в БД по его id")
     @Test
     void shouldDeleteComment() {
         int beforeSize =  commentRepository.findByBookId("1").size();
 
-        commentRepository.deleteById("2");
+        commentRepository.deleteById("1");
 
-        assertEquals(Optional.empty(), commentRepository.findById("2"));
+        assertEquals(Optional.empty(), commentRepository.findById("1"));
 
         int afterSize =  commentRepository.findByBookId("1").size();
         assertEquals(beforeSize - 1, afterSize);
+    }
+
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    @DisplayName("при удалении книги удаляет из БД все относящиеся к книге комментарии")
+    @Test
+    void shouldDeleteAllCommentToBook() {
+
+        int beforeSize =  commentRepository.findByBookId("1").size();
+        assertEquals(2, beforeSize);
+
+        bookRepository.deleteById("1");
+
+        assertEquals(List.of(), commentRepository.findByBookId("1"));
+
+        int afterSize =  commentRepository.findByBookId("1").size();
+        assertEquals(0, afterSize);
     }
 }

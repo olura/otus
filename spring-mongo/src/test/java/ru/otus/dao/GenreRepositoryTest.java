@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.test.annotation.DirtiesContext;
 import ru.otus.domain.Genre;
 
 import java.util.List;
@@ -33,6 +34,7 @@ public class GenreRepositoryTest {
         assertEquals(3, genres.size());
     }
 
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @DisplayName("сохраняет жанр в БД")
     @Test
     void shouldInsertGenre() {
@@ -50,7 +52,5 @@ public class GenreRepositoryTest {
         assertEquals(expectedGenre, actualGenre1);
         int afterInsertDuplicateSize = genreRepository.findAll().size();
         assertEquals(afterSize, afterInsertDuplicateSize);
-
-        genreRepository.deleteById(genre.getId());
     }
 }
