@@ -46,9 +46,9 @@ public class ShellController {
     }
 
     @ShellMethod(key = {"i", "insert"}, value = "Insert book")
-    public String insert(@ShellOption String title, @ShellOption int author_id, @ShellOption int genre_id) {
+    public String insert(@ShellOption String title, @ShellOption int authorId, @ShellOption int genreId) {
         try {
-            bookService.insert(title, author_id, genre_id);
+            bookService.insert(title, authorId, genreId);
         } catch (AuthorNotFoundException | GenreNotFoundExeption e) {
             return "Book does not inserted. Error: " + e.getMessage();
         }
@@ -57,9 +57,9 @@ public class ShellController {
 
     @ShellMethod(key = {"u", "update"}, value = "Update book")
     public String update(@ShellOption long id, @ShellOption String title,
-                         @ShellOption int author_id, @ShellOption int genre_id) {
+                         @ShellOption int authorId, @ShellOption int genreId) {
         try {
-            bookService.update(id, title, author_id, genre_id);
+            bookService.update(id, title, authorId, genreId);
         } catch (AuthorNotFoundException | GenreNotFoundExeption | BookNotFoundException e) {
              return "Book does not update. Error: " + e.getMessage();
         }

@@ -26,6 +26,7 @@
 		<module>spring-mvc</module>
 		<module>spring-jpa</module>
 		<module>spring-security-authorization</module>
+		<module>spring-security</module>
 	</modules>
 
 	<properties>
