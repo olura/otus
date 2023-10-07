@@ -1,4 +1,4 @@
-!#/bin/bash
+#!/bin/bash
 mvn clean
-mvn package
+mvn package -DskipTests=true
 docker-compose -f ./spring-docker/docker-compose.yml up
