@@ -11,4 +11,9 @@ public class BookPagesController {
     public String listBooksPage(Model model) {
         return "list";
     }
+
+    @GetMapping("/add")
+    public String addBooksPage(Model model) {
+        return "add";
+    }
 }

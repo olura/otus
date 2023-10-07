@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8"/>
     <title>List of all books</title>
@@ -58,6 +58,10 @@
     <tbody>
     </tbody>
 </table>
+<br>
+<div class="row">
+    <a href = "add.html" th:href = "@{/add}"><button type="button">Add new book</button></a>
+</div>
 
 </body>
 </html>
