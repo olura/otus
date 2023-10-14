@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Add book</title>
+    <style type="text/css">
+        body {
+            padding: 50px;
+        }
+
+        label {
+            display: inline-block;
+            width: 100px;
+        }
+
+        input:read-only {
+            background: lightgray;
+        }
+
+        .row {
+            margin-top: 10px;
+        }
+    </style>
+
+    <script>
+        var pathname = window.location.pathname;
+        var lastIndex = pathname.lastIndexOf("/");
+        var secondToLastElement = pathname.slice(lastIndex - 1, lastIndex);
+        console.log("Second to last element: " + secondToLastElement);
+
+        function saveBook() {
+            const savedPersonContainer = document.getElementById("saved-comment")
+            const titleInput = document.getElementById("comment-input")
+            let  book = {
+                text: titleInput.value,
+            }
+            fetch(`/api/book/${secondToLastElement}/comment`, {
+                method: 'POST',
+                headers: {
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(book)})
+            .then(rawResponse => rawResponse.json())
+            .then(json => savedPersonContainer.innerHTML = JSON.stringify(json, null, 4))
+        }
+    </script>
+</head>
+<body>
+
+<h3>Form for new comment creation:</h3>
+<div class="row">
+    <label for="comment-input">Title:</label>
+    <input id="comment-input" name="text" type="text"/>
+</div>
+<div class="row">
+    <button type="button" onclick="saveBook()" >Save</button>
+    <a href="viewBook.html" th:href="@{/book/__${id}__}"><button type="button">Go Back</button></a>
+</div>
+<h3>Saved comment:</h3>
+<pre id = "saved-comment"></pre>
+
+</body>
+</html>

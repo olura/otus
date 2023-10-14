@@ -22,6 +22,10 @@
         }
     </style>
     <script>
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const id = urlParams.get('id');
+        console.log(`id: ${id}`);
         function saveBook() {
             const savedPersonContainer = document.getElementById("saved-book")
             const titleInput = document.getElementById("book-title-input")
@@ -32,8 +36,8 @@
                 genre: genreInput.value,
                 author: authorInput.value
             }
-            fetch("/api/book", {
-                method: 'POST',
+            fetch(`/api/book/${id}`, {
+                method: 'PUT',
                 headers: {
                   'Accept': 'application/json',
                   'Content-Type': 'application/json'
@@ -71,26 +75,26 @@
 <body>
 
 <h3>Form for new book creation:</h3>
-<div class="row">
-    <label for="book-title-input">Title:</label>
-    <input id="book-title-input" name="title" type="text"/>
-</div>
-<div class="row">
-    <label for="book-author-input">Choose author:</label>
-    <select id="book-author-input" name="author" type="text">
-        <option value="">--Select a author--</option>
-    </select>
-</div>
-<div class="row">
-    <label for="book-genre-input">Choose genre:</label>
-    <select id="book-genre-input" name="genre" type="text">
-        <option value="">--Select a genre--</option>
-    </select>
-</div>
-<div class="row">
-    <button type="button" onclick="saveBook()" >Save</button>
-    <a href="list.html" th:href="@{/}"><button type="button">Go Back</button></a>
-</div>
+    <div class="row">
+        <label for="book-title-input">Title:</label>
+        <input id="book-title-input" name="title" type="text"/>
+    </div>
+    <div class="row">
+        <label for="book-author-input">Choose author:</label>
+        <select id="book-author-input" name="author" type="text">
+            <option value="">--Select a author--</option>
+        </select>
+    </div>
+    <div class="row">
+        <label for="book-genre-input">Choose genre:</label>
+        <select id="book-genre-input" name="genre" type="text">
+            <option value="">--Select a genre--</option>
+        </select>
+    </div>
+    <div class="row">
+        <button type="button" onclick="saveBook()" >Save</button>
+        <a href="viewBook.html" th:href="@{/book/__${id}__}"><button type="button">Go Back</button></a>
+    </div>
 <h3>Saved book:</h3>
 <pre id = "saved-book"></pre>
 

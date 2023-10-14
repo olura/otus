@@ -25,23 +25,42 @@
     </style>
 
     <script>
-    fetch('http://localhost:8080/api/book')
+    // Fetch data from server
+    fetch('/api/book')
         .then(response => response.json())
         .then(data => {
             const tableBody = document.querySelector('tbody');
             data.forEach(book => {
-                const row = tableBody.insertRow(-1);
-                const idCell = row.insertCell(0);
-                const bookCell = row.insertCell(1);
-                const authorCell = row.insertCell(2);
-                const genreCell = row.insertCell(3);
-                idCell.innerText = book.id;
-                bookCell.innerText = book.title;
-                authorCell.innerText = book.author;
-                genreCell.innerText = book.genre;
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${book.id}</td>
+                    <td>${book.title}</td>
+                    <td>${book.author}</td>
+                    <td>${book.genre}</td>
+                    <td><a href="/book/${book.id}">View</a></td>
+                    <td><a href="#" onclick="deleteRow(${book.id})">Delete</a></td>
+                    `
+                ;
+                tableBody.appendChild(row);
             });
         });
-</script>
+    // Delete row function
+    function deleteRow(id) {
+        fetch(`/api/book/${id}`, { method: 'DELETE' })
+            .then(response => {
+                if (response.ok) {
+                    const row = document.querySelector(`#table-body tr td:first-child[textContent="${id}"]`).parentNode;
+                    row.parentNode.removeChild(row);
+                } else {
+                    throw new Error('Failed to delete row');
+                }
+            })
+            .then(setTimeout(() => {
+                    location.reload();
+                  }, 100))
+            .catch(error => console.error(error));
+    }
+    </script>
 </head>
 <body>
 <h1>Books:</h1>
@@ -53,6 +72,8 @@
         <th>Book</th>
         <th>Author</th>
         <th>Genre</th>
+        <th>View book</th>
+        <th>Delete book</th>
     </tr>
     </thead>
     <tbody>
