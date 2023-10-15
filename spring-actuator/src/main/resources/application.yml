@@ -20,6 +20,9 @@ spring:
         enabled: true
   jmx:
     enabled: true
+  data:
+    rest:
+      basePath: /dataRest
 logging:
   level:
     ROOT: INFO
