@@ -49,15 +49,21 @@
         fetch(`/api/book/${id}`, { method: 'DELETE' })
             .then(response => {
                 if (response.ok) {
-                    const row = document.querySelector(`#table-body tr td:first-child[textContent="${id}"]`).parentNode;
-                    row.parentNode.removeChild(row);
+                    var table = document.querySelector('tbody');
+                    var rows = table.getElementsByTagName("tr");
+                    for (var i = 0; i < rows.length; i++) {
+                        var cells = rows[i].getElementsByTagName("td");
+                        if (cells[0].innerHTML == id) {
+                          var rowIndex = rows[i].rowIndex;
+                          break;
+                      }
+                    }
+                    console.log("Num is: " + rowIndex);
+                    table.deleteRow(rowIndex - 1);
                 } else {
                     throw new Error('Failed to delete row');
                 }
             })
-            .then(setTimeout(() => {
-                    location.reload();
-                  }, 100))
             .catch(error => console.error(error));
     }
     </script>
