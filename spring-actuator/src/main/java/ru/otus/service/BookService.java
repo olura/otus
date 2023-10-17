@@ -17,6 +17,4 @@ public interface BookService {
     Book saveEditBook(BookDto bookDto, long id);
 
     void deleteById(long id);
-
-    long count();
 }
