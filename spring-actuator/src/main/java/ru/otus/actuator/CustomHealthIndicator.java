@@ -18,7 +18,7 @@ public class CustomHealthIndicator implements HealthIndicator {
 
     @Override
     public Health health() {
-        long numberOfBook = bookService.getAll().size();
+        long numberOfBook = bookService.count();
         if (numberOfBook == 0) {
             return Health.down().withDetail("message", "The book library is empty").build();
         } else if (numberOfBook > 100) {
