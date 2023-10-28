@@ -1,0 +1,24 @@
+spring:
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: books
+
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true
+
+mongock:
+  runner-type: "ApplicationRunner" # default
+  change-logs-scan-package:
+    - ru.otus.mongock.changelog
+  mongo-db:
+    write-concern:
+      journal: false
+    read-concern: local
+
+logging:
+  level:
+    ROOT: ERROR
