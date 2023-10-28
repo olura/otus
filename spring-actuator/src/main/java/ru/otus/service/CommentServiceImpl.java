@@ -26,14 +26,18 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Comment> getAllCommentToBook(long id) {
+    public List<Comment> getAllCommentToBook(long id) throws BookNotFoundException {
+        if (!bookRepository.existsById(id)) {
+            throw new BookNotFoundException("The book with id " + id + " was not found");
+        }
         return commentRepository.findByBookId(id);
     }
 
     @Override
     @Transactional
     public Comment addComment(String text, long bookId) throws BookNotFoundException {
-        Book book = bookRepository.getById(bookId);
+        Book book =  bookRepository.findById(bookId).orElseThrow(
+                () -> new BookNotFoundException("The book with id " + bookId + " was not found"));
         return commentRepository.save(new Comment(text, book));
     }
 

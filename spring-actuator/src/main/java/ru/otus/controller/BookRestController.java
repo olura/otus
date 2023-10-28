@@ -3,11 +3,11 @@ package ru.otus.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PutMapping;
 import ru.otus.domain.Book;
 import ru.otus.dto.BookDto;
 import ru.otus.exception.BookNotFoundException;
@@ -35,19 +35,15 @@ public class BookRestController {
     }
 
     @GetMapping ("/api/book/{id}")
-    public BookDto getBook(@PathVariable long id) {
-        try {
-            Book book = bookService.getById(id);
-            return new BookDto(book);
-        } catch (BookNotFoundException e) {
-            return null;
-        }
+    public BookDto getBook(@PathVariable long id) throws BookNotFoundException {
+        Book book = bookService.getById(id);
+        return new BookDto(book);
     }
 
     @PostMapping("/api/book")
     public BookDto createBook(@RequestBody BookDto book) {
         if ("".equals(book.getAuthor()) || "".equals(book.getGenre())) {
-            return null;
+            throw new RuntimeException("the author or genre of the book is not specified");
         }
         Book savedBook = bookService.saveNewBook(book);
         return new BookDto(savedBook);
@@ -56,7 +52,7 @@ public class BookRestController {
     @PutMapping("/api/book/{id}")
     public BookDto editBook(@PathVariable("id") long id, @RequestBody BookDto book) {
         if ("".equals(book.getAuthor()) || "".equals(book.getGenre())) {
-            return null;
+            throw new RuntimeException("the author or genre of the book is not specified");
         }
         Book savedBook = bookService.saveEditBook(book, id);
         return new BookDto(savedBook);

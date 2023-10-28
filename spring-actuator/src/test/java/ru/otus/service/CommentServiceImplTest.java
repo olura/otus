@@ -39,7 +39,7 @@ public class CommentServiceImplTest {
 
     @DisplayName("возвращает список всех комментариев книги")
     @Test
-    void shouldReturnExpectedCommentListToBook() {
+    void shouldReturnExpectedCommentListToBook() throws BookNotFoundException {
 
         Author author1 = new Author(1,"Pushkin");
         Genre genre1 = new Genre(1, "Romance");
@@ -53,6 +53,7 @@ public class CommentServiceImplTest {
         expectedComment.add(new Comment("second comment", book2));
 
         given(commentRepository.findByBookId(anyLong())).willReturn(expectedComment);
+        given(bookRepository.existsById(anyLong())).willReturn(true);
 
         List<Comment> actualComment = commentService.getAllCommentToBook(1);
         assertEquals(expectedComment, actualComment);

@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface CommentService {
 
-    List<Comment> getAllCommentToBook(long id);
+    List<Comment> getAllCommentToBook(long id) throws BookNotFoundException;
 
     Comment addComment(String text, long bookId) throws BookNotFoundException;
 

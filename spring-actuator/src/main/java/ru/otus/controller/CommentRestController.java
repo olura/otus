@@ -26,7 +26,7 @@ public class CommentRestController {
     }
 
     @GetMapping("/api/book/{book_id}/comment")
-    public List<CommentDto> getAllComment(@PathVariable("book_id") long bookId) {
+    public List<CommentDto> getAllComment(@PathVariable("book_id") long bookId) throws BookNotFoundException {
         return commentService.getAllCommentToBook(bookId)
                 .stream()
                 .map(CommentDto::new)
@@ -34,13 +34,10 @@ public class CommentRestController {
     }
 
     @PostMapping("/api/book/{book_id}/comment")
-    public CommentDto createComment(@PathVariable("book_id") long bookId, @RequestBody CommentDto comment) {
-        try {
-            Comment savedComment = commentService.addComment(comment.getText(), bookId);
-            return new CommentDto(savedComment);
-        } catch (BookNotFoundException e) {
-            return null;
-        }
+    public CommentDto createComment(@PathVariable("book_id") long bookId, @RequestBody CommentDto comment)
+            throws BookNotFoundException {
+        Comment savedComment = commentService.addComment(comment.getText(), bookId);
+        return new CommentDto(savedComment);
     }
 
     @DeleteMapping("/api/book/{book_id}/comment/{id}")
