@@ -4,21 +4,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.stereotype.Component;
-import ru.otus.dao.BookRepository;
+import ru.otus.service.BookService;
 
 @Component
 public class CustomHealthIndicator implements HealthIndicator {
 
-    private final BookRepository bookRepository;
+    private final BookService bookService;
 
     @Autowired
-    public CustomHealthIndicator(BookRepository bookRepository) {
-        this.bookRepository = bookRepository;
+    public CustomHealthIndicator(BookService bookService) {
+        this.bookService = bookService;
     }
 
     @Override
     public Health health() {
-        long numberOfBook = bookRepository.count();
+        long numberOfBook = bookService.count();
         if (numberOfBook == 0) {
             return Health.down().withDetail("message", "The book library is empty").build();
         } else if (numberOfBook > 100) {
