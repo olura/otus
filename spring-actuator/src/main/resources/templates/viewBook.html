@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title>List of all books</title>
+  <style type="text/css">
+        body {
+            padding: 50px;
+        }
+
+        .books {
+            border: 1px solid steelblue;
+            width: 500px;
+            border-collapse: collapse;
+        }
+
+        .books tr td, th {
+            padding: 5px;
+            border: 1px solid steelblue;
+        }
+
+        .books td:last-child, td:first-child {
+            width: 50px;
+        }
+
+        .comments {
+            border: 1px solid steelblue;
+            width: 300px;
+            border-collapse: collapse;
+        }
+
+        .comments tr td, th {
+            padding: 5px;
+            border: 1px solid steelblue;
+        }
+
+        .comments td:last-child, td:first-child {
+            width: 50px;
+        }
+  </style>
+  <script>
+
+      var pathname = window.location.pathname;
+      var lastIndex = pathname.lastIndexOf("/");
+      var lastElement = pathname.substr(lastIndex + 1);
+
+      // Fetch data from server
+      fetch(`/api/book/${lastElement}`)
+        .then(response => response.json())
+        .then(data => {
+            const tableBody = document.querySelector('#book-body');
+              const row = document.createElement('tr');
+              row.innerHTML = `
+                  <td>${data.id}</td>
+                  <td>${data.title}</td>
+                  <td>${data.author}</td>
+                  <td>${data.genre}</td>
+                  <td><a href="/edit?id=${data.id}">Edit</a></td>
+                  `
+              ;
+              tableBody.appendChild(row);
+        });
+      // Fetch data from server
+      fetch(`/api/book/${lastElement}/comment`)
+          .then(response => response.json())
+          .then(data => {
+              const tableBody = document.querySelector('#comments-body');
+              data.forEach(book => {
+                  const row = document.createElement('tr');
+                  row.innerHTML = `
+                      <td>${book.id}</td>
+                      <td>${book.text}</td>
+                      <td><a href="#" onclick="deleteRow(${book.id})">Delete</a></td>
+                      `
+                  ;
+                  tableBody.appendChild(row);
+              });
+          });
+      // Delete row function
+      function deleteRow(id) {
+          fetch(`/api/book/${lastElement}/comment/${id}`, { method: 'DELETE' })
+              .then(response => {
+                  if (response.ok) {
+                    var table = document.querySelector('#comments-body');
+                    var rows = table.getElementsByTagName("tr");
+                    for (var i = 0; i < rows.length; i++) {
+                        var cells = rows[i].getElementsByTagName("td");
+                        if (cells[0].innerHTML == id) {
+                          var rowIndex = rows[i].rowIndex;
+                          break;
+                      }
+                    }
+                    console.log("Num is: " + rowIndex);
+                    table.deleteRow(rowIndex - 1);
+                  } else {
+                      throw new Error('Failed to delete row');
+                  }
+              })
+              .catch(error => console.error(error));
+      }
+  </script>
+</head>
+<body>
+<h3>Book:</h3>
+<table class="books">
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>Title</th>
+    <th>Author</th>
+    <th>Genre</th>
+    <th>Action</th>
+  </tr>
+  </thead>
+  <tbody id="book-body">
+  </tbody>
+</table>
+<br>
+<h4>Comments:</h4>
+
+<table class="comments">
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>Text</th>
+    <th>Action</th>
+  </tr>
+  </thead>
+  <tbody id="comments-body">
+  </tbody>
+</table>
+<h5>
+  <a href="createComment.html" th:href="@{/book/__${id}__/comment}">Add comment</a>
+</h5>
+
+<br/>
+
+<h4>
+  <a href="viewBooks.html" th:href="@{/}">All books</a>
+</h4>
+
+</body>
+</html>

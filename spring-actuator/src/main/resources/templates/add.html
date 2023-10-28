@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Add book</title>
+    <style type="text/css">
+        body {
+            padding: 50px;
+        }
+
+        label {
+            display: inline-block;
+            width: 100px;
+        }
+
+        input:read-only {
+            background: lightgray;
+        }
+
+        .row {
+            margin-top: 10px;
+        }
+    </style>
+    <script>
+        function saveBook() {
+            const savedPersonContainer = document.getElementById("saved-book")
+            const titleInput = document.getElementById("book-title-input")
+            const authorInput = document.getElementById("book-author-input")
+            const genreInput = document.getElementById("book-genre-input")
+            let  book = {
+                title: titleInput.value,
+                genre: genreInput.value,
+                author: authorInput.value
+            }
+            fetch("/api/book", {
+                method: 'POST',
+                headers: {
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(book)})
+            .then(rawResponse => rawResponse.json())
+            .then(json => savedPersonContainer.innerHTML = JSON.stringify(json, null, 4))
+        }
+        // Fetch author from server
+        fetch('/api/author')
+            .then(response => response.json())
+            .then(data => {
+                const select = document.getElementById('book-author-input');
+                data.forEach(author => {
+                    const option = document.createElement('option');
+                    option.text = author.name;
+                    select.appendChild(option);
+                });
+            })
+            .catch(error => console.error(error));
+        // Fetch author from server
+        fetch('/api/genre')
+            .then(response => response.json())
+            .then(data => {
+                const select = document.getElementById('book-genre-input');
+                data.forEach(genre => {
+                    const option = document.createElement('option');
+                    option.text = genre.title;
+                    select.appendChild(option);
+                });
+            })
+            .catch(error => console.error(error));
+    </script>
+</head>
+<body>
+
+<h3>Form for new book creation:</h3>
+<div class="row">
+    <label for="book-title-input">Title:</label>
+    <input id="book-title-input" name="title" type="text"/>
+</div>
+<div class="row">
+    <label for="book-author-input">Choose author:</label>
+    <select id="book-author-input" name="author" type="text">
+        <option value="">--Select a author--</option>
+    </select>
+</div>
+<div class="row">
+    <label for="book-genre-input">Choose genre:</label>
+    <select id="book-genre-input" name="genre" type="text">
+        <option value="">--Select a genre--</option>
+    </select>
+</div>
+<div class="row">
+    <button type="button" onclick="saveBook()" >Save</button>
+    <a href="list.html" th:href="@{/}"><button type="button">Go Back</button></a>
+</div>
+<h3>Saved book:</h3>
+<pre id = "saved-book"></pre>
+
+</body>
+</html>

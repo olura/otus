@@ -29,6 +29,7 @@
 		<module>spring-security</module>
 		<module>spring-rest</module>
 		<module>spring-mongo</module>
+		<module>spring-actuator</module>
 	</modules>
 
 	<properties>
