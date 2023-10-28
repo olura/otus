@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import ru.otus.domain.Book;
 import ru.otus.dto.BookDto;
 import ru.otus.exception.BookNotFoundException;
@@ -63,11 +62,5 @@ public class BookRestController {
     public String deleteBook(@PathVariable("id") long id) {
         bookService.deleteById(id);
         return "{\"state\":\"success\"}";
-    }
-
-    @ExceptionHandler({BookNotFoundException.class, RuntimeException.class})
-    public String handleMyException(Exception ex) {
-        return "{\"state\":\"fail\"," +
-                "\"message\":\"" + ex.getMessage() + "\"}";
     }
 }
